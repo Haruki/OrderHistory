@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/gin-gonic/gin"
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -22,6 +23,16 @@ func (t TestType) test(kalr string) {
 }
 
 func main() {
+	r := gin.Default()
+	r.GET("/ping", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"message": "pong",
+		})
+	})
+	r.Run()
+}
+
+func doDbStuff() {
 	now := time.Now().UTC()
 	log.Printf("Zeit: %v", now.Format("2006 01 02"))
 	pathstring, _ := filepath.Abs("/mnt/d/purchase_history_sqlite.db")
