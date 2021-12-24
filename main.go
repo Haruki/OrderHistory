@@ -17,6 +17,17 @@ type TestType struct {
 	variable2 int
 }
 
+type ebay struct {
+	purchaseDate   string
+	ItemName       string `json:"itemName"`
+	vendorPlatform string
+	price          float32
+	imgUrl         string
+	//special ebay variables:
+	vendor        string
+	artikelnummer int
+}
+
 func (t TestType) test(kalr string) {
 	log.Printf("variable1: %v %v", t.variable1, kalr)
 	log.Printf("variable2: %v %v", t.variable2, kalr)
@@ -28,6 +39,16 @@ func main() {
 		c.JSON(200, gin.H{
 			"message": "pong",
 		})
+	})
+	r.POST("/order", func(c *gin.Context) {
+		var ebayOrder ebay
+		err := c.ShouldBindJSON(&ebayOrder)
+		if err == nil {
+			log.Println(fmt.Sprintf("hmmm itemName: %v", ebayOrder.ItemName))
+		} else {
+			log.Println("hmm irgendwas is fishy ", err.Error())
+		}
+		c.String(200, "Success")
 	})
 	r.Run()
 }
