@@ -2,14 +2,18 @@ package main
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
+	"io"
 	"log"
+	"net/http"
 	"os"
 	"path/filepath"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/mattn/go-sqlite3"
+	cors "github.com/rs/cors/wrapper/gin"
 )
 
 type TestType struct {
@@ -18,14 +22,15 @@ type TestType struct {
 }
 
 type ebay struct {
-	purchaseDate   string
+	Id             int64
+	PurchaseDate   string `jdon:"purchaseDate"`
 	ItemName       string `json:"itemName"`
-	vendorPlatform string
-	price          float32
-	imgUrl         string
+	VendorPlatform string
+	Price          float32 `json:"price"`
+	ImgUrl         string  `json:"imgUrl"`
 	//special ebay variables:
-	vendor        string
-	artikelnummer int
+	Vendor        string `json:"vendor"`
+	Artikelnummer int    `json:"artikelnummer"`
 }
 
 func (t TestType) test(kalr string) {
@@ -35,22 +40,46 @@ func (t TestType) test(kalr string) {
 
 func main() {
 	r := gin.Default()
+	// same as
+	// config := cors.DefaultConfig()
+	// config.AllowAllOrigins = true
+	// router.Use(cors.New(config))
+	r.Use(cors.Default())
 	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(200, gin.H{
-			"message": "pong",
+			"message": "OK",
 		})
 	})
-	r.POST("/order", func(c *gin.Context) {
-		var ebayOrder ebay
-		err := c.ShouldBindJSON(&ebayOrder)
-		if err == nil {
-			log.Println(fmt.Sprintf("hmmm itemName: %v", ebayOrder.ItemName))
+	r.POST("/order/:platform", func(c *gin.Context) {
+		platform := c.Param("platform")
+		if platform == "ebay" {
+			var ebayOrder ebay
+			err := c.ShouldBindJSON(&ebayOrder)
+			if err == nil {
+				log.Println(fmt.Sprintf("itemName: %v", ebayOrder.ItemName))
+				log.Println(fmt.Sprintf("ImgUrl: %v", ebayOrder.ImgUrl))
+				downloadFile(ebayOrder.ImgUrl, fmt.Sprintf("%s%s%d%s", "./", "ebay_", ebayOrder.Artikelnummer, ".jpg"))
+			} else {
+				log.Println("hmm irgendwas is fishy ", err.Error())
+			}
+			c.String(200, "Success")
 		} else {
-			log.Println("hmm irgendwas is fishy ", err.Error())
+			c.String(404, "platform not supported")
 		}
-		c.String(200, "Success")
 	})
-	r.Run()
+	r.Run(":8081")
+}
+
+func store(db *sql.DB, order *ebay) {
+
+	pathstring, _ := filepath.Abs("/mnt/d/purchase_history_sqlite.db")
+	log.Printf("DB Pfad: %v", pathstring)
+	db, err := sql.Open("sqlite3", pathstring)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
+
 }
 
 func doDbStuff() {
@@ -89,4 +118,32 @@ func doDbStuff() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+}
+
+func downloadFile(URL, fileName string) error {
+	//Get the response bytes from the url
+	response, err := http.Get(URL)
+	if err != nil {
+		return err
+	}
+	defer response.Body.Close()
+
+	if response.StatusCode != 200 {
+		return errors.New("Received non 200 response code")
+	}
+	//Create a empty file
+	file, err := os.Create(fileName)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	//Write the bytes to the fiel
+	_, err = io.Copy(file, response.Body)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
