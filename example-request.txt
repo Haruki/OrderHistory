@@ -1,0 +1,15 @@
+url: localhost:8081/order/ebay
+
+
+{ "itemName" : "Krytox GPL105 Spezial-Gleitmittel, G 052 172 A1, 20",
+"purchaseDate" : "24. Jan. 2019",
+    "price" : 1995,
+    "currency" : "$",
+    "vendor" : "frodo4711",
+    "artikelnummer" : 233103231660,
+    "imgUrl" : "https://i.ebayimg.com/images/g/rHoAAOSwrQxcAoS3/s-l140.jpg"
+}
+
+header:
+Content-Type: application/json
+Origin:  http://example.com

@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -9,12 +10,16 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/mattn/go-sqlite3"
 	cors "github.com/rs/cors/wrapper/gin"
 )
+
+//go reference time
+//Mon Jan 2 15:04:05 -0700 MST 2006
 
 type TestType struct {
 	variable1 string
@@ -26,8 +31,10 @@ type ebay struct {
 	PurchaseDate   string `jdon:"purchaseDate"`
 	ItemName       string `json:"itemName"`
 	VendorPlatform string
-	Price          float32 `json:"price"`
-	ImgUrl         string  `json:"imgUrl"`
+	Price          int    `json:"price"`
+	Currency       string `json:"currency"`
+	ImgUrl         string `json:"imgUrl"`
+	imgFile        string
 	//special ebay variables:
 	Vendor        string `json:"vendor"`
 	Artikelnummer int    `json:"artikelnummer"`
@@ -39,6 +46,13 @@ func (t TestType) test(kalr string) {
 }
 
 func main() {
+	pathstring, _ := filepath.Abs("/mnt/d/orderHistory-sqlite.db")
+	log.Printf("DB Pfad: %v", pathstring)
+	db, err := sql.Open("sqlite3", pathstring)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	r := gin.Default()
 	// same as
 	// config := cors.DefaultConfig()
@@ -54,11 +68,19 @@ func main() {
 		platform := c.Param("platform")
 		if platform == "ebay" {
 			var ebayOrder ebay
+			ebayOrder.VendorPlatform = "ebay"
 			err := c.ShouldBindJSON(&ebayOrder)
 			if err == nil {
 				log.Println(fmt.Sprintf("itemName: %v", ebayOrder.ItemName))
 				log.Println(fmt.Sprintf("ImgUrl: %v", ebayOrder.ImgUrl))
-				downloadFile(ebayOrder.ImgUrl, fmt.Sprintf("%s%s%d%s", "./", "ebay_", ebayOrder.Artikelnummer, ".jpg"))
+				fixedDate, err := time.Parse("02. Jan. 2006", ebayOrder.PurchaseDate)
+				ebayOrder.PurchaseDate = fixedDate.Format("2006-01-02")
+				if err != nil {
+					log.Fatal()
+				}
+				ebayOrder.imgFile = fmt.Sprintf("%s%d%s", "ebay_", ebayOrder.Artikelnummer, ".jpg")
+				downloadFile(ebayOrder.ImgUrl, fmt.Sprintf("%s%s", "./", ebayOrder.imgFile))
+				store(db, &ebayOrder)
 			} else {
 				log.Println("hmm irgendwas is fishy ", err.Error())
 			}
@@ -72,20 +94,34 @@ func main() {
 
 func store(db *sql.DB, order *ebay) {
 
-	pathstring, _ := filepath.Abs("/mnt/d/purchase_history_sqlite.db")
-	log.Printf("DB Pfad: %v", pathstring)
-	db, err := sql.Open("sqlite3", pathstring)
+	tx, err := db.Begin()
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer db.Close()
-
+	stmt, err := tx.Prepare("insert into t_purchase(item_name, purchase_date, vendor_platform, price, img_url, div, img_file, currency) values(?, ?, ?, ?, ?, ?, ?, ?)")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer stmt.Close()
+	var divList []string
+	divList = append(divList, strconv.Itoa(order.Artikelnummer))
+	divList = append(divList, order.Vendor)
+	jsondiv, err := json.Marshal(divList)
+	div := string(jsondiv)
+	if err != nil {
+		log.Fatal(err)
+	}
+	_, err = stmt.Exec(order.ItemName, order.PurchaseDate, order.VendorPlatform, order.Price, order.ImgUrl, div, order.imgFile, order.Currency)
+	if err != nil {
+		log.Fatal(err)
+	}
+	tx.Commit()
 }
 
 func doDbStuff() {
 	now := time.Now().UTC()
 	log.Printf("Zeit: %v", now.Format("2006 01 02"))
-	pathstring, _ := filepath.Abs("/mnt/d/purchase_history_sqlite.db")
+	pathstring, _ := filepath.Abs("/mnt/d/orderHistory-sqlite.db")
 	log.Printf("DB Pfad: %v", pathstring)
 	db, err := sql.Open("sqlite3", pathstring)
 	if err != nil {
