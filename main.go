@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/sha256"
 	"database/sql"
 	"encoding/json"
 	"errors"
@@ -38,6 +39,7 @@ type ebay struct {
 	//special ebay variables:
 	Vendor        string `json:"vendor"`
 	Artikelnummer int    `json:"artikelnummer"`
+	imgHash       string
 }
 
 func (t TestType) test(kalr string) {
@@ -76,17 +78,27 @@ func main() {
 				fixedDate, err := time.Parse("02. Jan. 2006", ebayOrder.PurchaseDate)
 				ebayOrder.PurchaseDate = fixedDate.Format("2006-01-02")
 				if err != nil {
-					log.Fatal()
+					log.Fatal(err)
 				}
-				ebayOrder.imgFile = fmt.Sprintf("%s%d%s", "ebay_", ebayOrder.Artikelnummer, ".jpg")
-				downloadFile(ebayOrder.ImgUrl, fmt.Sprintf("%s%s", "./", ebayOrder.imgFile))
+				ebayOrder.imgFile = fmt.Sprintf("%s%d", "ebay_", ebayOrder.Artikelnummer)
+				var hash string
+				ebayOrder.imgFile, hash, err = downloadFile(ebayOrder.ImgUrl, fmt.Sprintf("%s%s", "./img/", ebayOrder.imgFile))
+				if err != nil {
+					log.Printf("WARNUNG: Downloadfehler! %v", err)
+				}
+				log.Printf("image hash: %v\n", hash)
+				ebayOrder.imgHash = hash
 				store(db, &ebayOrder)
 			} else {
 				log.Println("hmm irgendwas is fishy ", err.Error())
 			}
-			c.String(200, "Success")
+			c.JSON(200, gin.H{
+				"message": "Success",
+			})
 		} else {
-			c.String(404, "platform not supported")
+			c.JSON(404, gin.H{
+				"message": "Fail (Platform not supported yet)",
+			})
 		}
 	})
 	r.Run(":8081")
@@ -98,7 +110,7 @@ func store(db *sql.DB, order *ebay) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	stmt, err := tx.Prepare("insert into t_purchase(item_name, purchase_date, vendor_platform, price, img_url, div, img_file, currency) values(?, ?, ?, ?, ?, ?, ?, ?)")
+	stmt, err := tx.Prepare("insert into t_purchase(item_name, purchase_date, vendor_platform, price, img_url, div, img_file, currency, img_hash) values(?, ?, ?, ?, ?, ?, ?, ?, ?)")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -111,7 +123,7 @@ func store(db *sql.DB, order *ebay) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	_, err = stmt.Exec(order.ItemName, order.PurchaseDate, order.VendorPlatform, order.Price, order.ImgUrl, div, order.imgFile, order.Currency)
+	_, err = stmt.Exec(order.ItemName, order.PurchaseDate, order.VendorPlatform, order.Price, order.ImgUrl, div, order.imgFile, order.Currency, order.imgHash)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -157,29 +169,39 @@ func doDbStuff() {
 
 }
 
-func downloadFile(URL, fileName string) error {
+func downloadFile(URL, fileName string) (string, string, error) {
 	//Get the response bytes from the url
 	response, err := http.Get(URL)
 	if err != nil {
-		return err
+		return "", "", err
 	}
 	defer response.Body.Close()
 
 	if response.StatusCode != 200 {
-		return errors.New("Received non 200 response code")
+		return "", "", errors.New("Received non 200 response code")
 	}
 	//Create a empty file
-	file, err := os.Create(fileName)
-	if err != nil {
-		return err
-	}
-	defer file.Close()
+	/*
+		file, err := os.Create(fileName)
+		if err != nil {
+			return err
+		}
+		defer file.Close()
+	*/
 
-	//Write the bytes to the fiel
-	_, err = io.Copy(file, response.Body)
+	//Write the bytes to the file
+	/*
+		_, err = io.Copy(file, response.Body)
+	*/
+	b, err := io.ReadAll(response.Body)
 	if err != nil {
-		return err
+		return "", "", err
 	}
-
-	return nil
+	hsha2 := fmt.Sprintf("%x", sha256.Sum256(b))
+	fmt.Println("SHA256: ", hsha2)
+	fileName = fileName + "_" + hsha2[0:5] + ".jpg"
+	if hsha2 != "a567462f4edd496bdf5cd00da5bbde64131c283e3cf396bfd58c0fac26b13d9a" {
+		err = os.WriteFile(fileName, b, 0777)
+	}
+	return fileName, hsha2, nil
 }
