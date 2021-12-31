@@ -12,7 +12,9 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"time"
+	"unicode"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/mattn/go-sqlite3"
@@ -29,7 +31,7 @@ type TestType struct {
 
 type ebay struct {
 	Id             int64
-	PurchaseDate   string `jdon:"purchaseDate"`
+	PurchaseDate   string `json:"purchaseDate"`
 	ItemName       string `json:"itemName"`
 	VendorPlatform string
 	Price          int    `json:"price"`
@@ -42,12 +44,24 @@ type ebay struct {
 	imgHash       string
 }
 
+type alternate struct {
+	Id           int64
+	PurchaseDate string `json:"purchaseDate"`
+	ItemName     string `json:"itemName"`
+	Price        int    `json:"price"`
+	ImgUrl       string `json:"imgUrl"`
+	imgFile      string
+	imgHash      string
+	Anzahl       int `json:"anzahl"`
+}
+
 func (t TestType) test(kalr string) {
 	log.Printf("variable1: %v %v", t.variable1, kalr)
 	log.Printf("variable2: %v %v", t.variable2, kalr)
 }
 
 func main() {
+	//pathstring, _ := filepath.Abs("/mnt/d/orderHistory-alternate-test.db")
 	pathstring, _ := filepath.Abs("/mnt/d/orderHistory-sqlite.db")
 	log.Printf("DB Pfad: %v", pathstring)
 	db, err := sql.Open("sqlite3", pathstring)
@@ -88,13 +102,40 @@ func main() {
 				}
 				log.Printf("image hash: %v\n", hash)
 				ebayOrder.imgHash = hash
-				store(db, &ebayOrder)
+				storeEbay(db, &ebayOrder)
 			} else {
 				log.Println("hmm irgendwas is fishy ", err.Error())
 			}
 			c.JSON(200, gin.H{
 				"message": "Success",
 			})
+		} else if platform == "alternate" {
+			var alternateOrder alternate
+			err := c.ShouldBindJSON(&alternateOrder)
+			if err == nil {
+				log.Println(fmt.Sprintf("itemName: %v", alternateOrder.ItemName))
+				log.Println(fmt.Sprintf("ImgUrl: %v", alternateOrder.ImgUrl))
+				fixedDate, err := time.Parse("02.01.2006", alternateOrder.PurchaseDate)
+				alternateOrder.PurchaseDate = fixedDate.Format("2006-01-02")
+				if err != nil {
+					log.Fatal(err)
+				}
+				var hash string
+				alternateOrder.imgFile = fmt.Sprintf("%s%s%s%s", "alternate_", alternateOrder.PurchaseDate, "_", SpaceMap(alternateOrder.ItemName)[:5])
+				alternateOrder.imgFile, hash, err = downloadFile(alternateOrder.ImgUrl, fmt.Sprintf("%s%s", "./img/", alternateOrder.imgFile))
+				if err != nil {
+					log.Printf("WARNUNG: Downloadfehler! %v", err)
+				}
+				log.Printf("image hash: %v\n", hash)
+				alternateOrder.imgHash = hash
+				storeAlternate(db, &alternateOrder)
+			} else {
+				log.Println("hmm irgendwas is fishy ", err.Error())
+			}
+			c.JSON(200, gin.H{
+				"message": "Success",
+			})
+
 		} else {
 			c.JSON(404, gin.H{
 				"message": "Fail (Platform not supported yet)",
@@ -104,7 +145,32 @@ func main() {
 	r.Run(":8081")
 }
 
-func store(db *sql.DB, order *ebay) {
+func storeAlternate(db *sql.DB, order *alternate) {
+
+	tx, err := db.Begin()
+	if err != nil {
+		log.Fatal(err)
+	}
+	stmt, err := tx.Prepare("insert into t_purchase(item_name, purchase_date, vendor_platform, price, img_url, div, img_file, currency, img_hash) values(?, ?, ?, ?, ?, ?, ?, ?, ?)")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer stmt.Close()
+	var divList []string
+	divList = append(divList, strconv.Itoa(order.Anzahl))
+	jsondiv, err := json.Marshal(divList)
+	div := string(jsondiv)
+	if err != nil {
+		log.Fatal(err)
+	}
+	_, err = stmt.Exec(order.ItemName, order.PurchaseDate, "alternate", order.Price, order.ImgUrl, div, order.imgFile, "€", order.imgHash)
+	if err != nil {
+		log.Fatal(err)
+	}
+	tx.Commit()
+}
+
+func storeEbay(db *sql.DB, order *ebay) {
 
 	tx, err := db.Begin()
 	if err != nil {
@@ -128,45 +194,6 @@ func store(db *sql.DB, order *ebay) {
 		log.Fatal(err)
 	}
 	tx.Commit()
-}
-
-func doDbStuff() {
-	now := time.Now().UTC()
-	log.Printf("Zeit: %v", now.Format("2006 01 02"))
-	pathstring, _ := filepath.Abs("/mnt/d/orderHistory-sqlite.db")
-	log.Printf("DB Pfad: %v", pathstring)
-	db, err := sql.Open("sqlite3", pathstring)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer db.Close()
-	var teststring string = "hallo"
-	teststring2 := os.Args[1]
-	fmt.Println(teststring)
-	log.Printf("ergebnis: %v", teststring)
-	log.Printf("ergebnis: %v", teststring2)
-	var tsst TestType = TestType{"arsch", 2}
-	tsst.test("wurst")
-
-	rows, err := db.Query("select id, item_name, div from t_purchase")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer rows.Close()
-	for rows.Next() {
-		var id int
-		var name, div string
-		err = rows.Scan(&id, &name, &div)
-		if err != nil {
-			log.Fatal(err)
-		}
-		fmt.Println(id, name, ",DIV: ", div)
-	}
-	err = rows.Err()
-	if err != nil {
-		log.Fatal(err)
-	}
-
 }
 
 func downloadFile(URL, fileName string) (string, string, error) {
@@ -200,8 +227,17 @@ func downloadFile(URL, fileName string) (string, string, error) {
 	hsha2 := fmt.Sprintf("%x", sha256.Sum256(b))
 	fmt.Println("SHA256: ", hsha2)
 	fileName = fileName + "_" + hsha2[0:5] + ".jpg"
-	if hsha2 != "a567462f4edd496bdf5cd00da5bbde64131c283e3cf396bfd58c0fac26b13d9a" {
+	if hsha2 != "a567462f4edd496bdf5cd00da5bbde64131c283e3cf396bfd58c0fac26b13d9a" && hsha2 != "c041d4387a7d60b3d31d7f9c39e8ac531d8a342e24e695c739718a388f914f93" {
 		err = os.WriteFile(fileName, b, 0777)
 	}
 	return fileName, hsha2, nil
+}
+
+func SpaceMap(str string) string {
+	return strings.Map(func(r rune) rune {
+		if unicode.IsSpace(r) {
+			return -1
+		}
+		return r
+	}, str)
 }
