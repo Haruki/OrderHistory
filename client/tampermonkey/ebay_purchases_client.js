@@ -80,7 +80,7 @@ async function postData(url = '', data = {}) {
             price: parseInt(price),
             vendor: vendorElement.firstChild.textContent,
             imgUrl: imgUrl,
-            purchaseDate: dateElement.textContent.replace("Mai", "May").replace("Okt","Oct").replace("Dez","Dec"),
+            purchaseDate: dateElement.textContent.replace("Mai", "May").replace("Okt","Oct").replace("Dez","Dec").replace("Mär","Mar"),
             currency: currency
         }
         console.log(JSON.stringify(orderObj))

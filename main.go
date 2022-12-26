@@ -69,7 +69,8 @@ func main() {
 		log.Fatal(err)
 	}
 
-	r := gin.Default()
+	//r := gin.Default()
+	r := gin.New() //Default ersetzt durch New. Default hat einen debug logger, der nicht mehr benötigt wird.
 	// same as
 	// config := cors.DefaultConfig()
 	// config.AllowAllOrigins = true
