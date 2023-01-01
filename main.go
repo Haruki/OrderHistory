@@ -9,6 +9,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -44,6 +45,22 @@ type ebay struct {
 	imgHash       string
 }
 
+type aliexpress struct {
+	Id            int64
+	PurchaseDate  string
+	ItemName      string
+	Price         int
+	SinglePrice   int
+	ImgUrl        string
+	imgFile       string
+	imgHash       string
+	Anzahl        int
+	Vendor        string
+	Bestellnummer int64
+	ItemOption    string
+	Currency      string
+}
+
 type alternate struct {
 	Id           int64
 	PurchaseDate string `json:"purchaseDate"`
@@ -70,6 +87,7 @@ func main() {
 	}
 
 	//r := gin.Default()
+	gin.SetMode(gin.ReleaseMode)
 	r := gin.New() //Default ersetzt durch New. Default hat einen debug logger, der nicht mehr benötigt wird.
 	// same as
 	// config := cors.DefaultConfig()
@@ -83,7 +101,38 @@ func main() {
 	})
 	r.POST("/order/:platform", func(c *gin.Context) {
 		platform := c.Param("platform")
-		if platform == "ebay" {
+		if platform == "aliexpress" {
+			var aliOrder aliexpress
+			err := c.ShouldBindJSON(&aliOrder)
+			if err == nil {
+				log.Println(fmt.Sprintf("itemName: %v", aliOrder.ItemName))
+				log.Println(fmt.Sprintf("ImgUrl: %v", aliOrder.ImgUrl))
+				fixedDate, err := time.Parse("02. Jan 2006", aliOrder.PurchaseDate)
+				aliOrder.PurchaseDate = fixedDate.Format("2006-01-02")
+				if err != nil {
+					log.Fatal(err)
+				}
+				aliOrder.imgFile = fmt.Sprintf("%s%d", "aliexpress_", aliOrder.Bestellnummer)
+				var hash string
+				imgUrl, err := url.QueryUnescape(aliOrder.ImgUrl)
+				if err != nil {
+					log.Println("Fehler: URL kann nicht dekodiert werden!" + err.Error())
+				}
+				log.Println("unescaped: " + imgUrl)
+				aliOrder.imgFile, hash, err = downloadFile(imgUrl, fmt.Sprintf("%s%s", "./img/", aliOrder.imgFile))
+				if err != nil {
+					log.Printf("WARNUNG: Downloadfehler! %v", err)
+				}
+				log.Printf("image hash: %v\n", hash)
+				aliOrder.imgHash = hash
+				storeAliexpress(db, &aliOrder)
+			} else {
+				log.Println("hmm irgendwas is fishy ", err.Error())
+			}
+			c.JSON(200, gin.H{
+				"message": "Success",
+			})
+		} else if platform == "ebay" {
 			var ebayOrder ebay
 			ebayOrder.VendorPlatform = "ebay"
 			err := c.ShouldBindJSON(&ebayOrder)
@@ -172,7 +221,6 @@ func storeAlternate(db *sql.DB, order *alternate) {
 }
 
 func storeEbay(db *sql.DB, order *ebay) {
-
 	tx, err := db.Begin()
 	if err != nil {
 		log.Fatal(err)
@@ -191,6 +239,33 @@ func storeEbay(db *sql.DB, order *ebay) {
 		log.Fatal(err)
 	}
 	_, err = stmt.Exec(order.ItemName, order.PurchaseDate, order.VendorPlatform, order.Price, order.ImgUrl, div, order.imgFile, order.Currency, order.imgHash)
+	if err != nil {
+		log.Fatal(err)
+	}
+	tx.Commit()
+}
+
+func storeAliexpress(db *sql.DB, order *aliexpress) {
+	tx, err := db.Begin()
+	if err != nil {
+		log.Fatal(err)
+	}
+	stmt, err := tx.Prepare("insert into t_purchase(item_name, purchase_date, vendor_platform, price, img_url, div, img_file, currency, img_hash) values(?, ?, ?, ?, ?, ?, ?, ?, ?)")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer stmt.Close()
+	var divList []string
+	divList = append(divList, order.ItemOption)
+	divList = append(divList, order.Vendor)
+	divList = append(divList, strconv.Itoa(order.SinglePrice))
+	divList = append(divList, strconv.Itoa(order.Anzahl))
+	jsondiv, err := json.Marshal(divList)
+	div := string(jsondiv)
+	if err != nil {
+		log.Fatal(err)
+	}
+	_, err = stmt.Exec(order.ItemName, order.PurchaseDate, "aliexpress", order.Price, order.ImgUrl, div, order.imgFile, order.Currency, order.imgHash)
 	if err != nil {
 		log.Fatal(err)
 	}
