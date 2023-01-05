@@ -19,3 +19,9 @@ select * from t_ignoreHash
 
 insert into t_ignoreHash (vendor_platform, img_hash) values ('ebay', 'a567462f4edd496bdf5cd00da5bbde64131c283e3cf396bfd58c0fac26b13d9a')
 insert into t_ignoreHash (vendor_platform , img_hash) values ('alternate','c041d4387a7d60b3d31d7f9c39e8ac531d8a342e24e695c739718a388f914f93')
+
+delete from t_purchase where id > 223
+
+select * from t_purchase where  img_hash = 'a567462f4edd496bdf5cd00da5bbde64131c283e3cf396bfd58c0fac26b13d9a'
+
+select * from t_purchase where vendor_platform = 'aliexpress' order by purchase_date desc
