@@ -17,6 +17,8 @@ import (
 	"time"
 	"unicode"
 
+	webui "github.com/haruki/OrderHistory/ui_api"
+
 	"github.com/gin-gonic/gin"
 	_ "github.com/mattn/go-sqlite3"
 	cors "github.com/rs/cors/wrapper/gin"
@@ -98,6 +100,14 @@ func main() {
 		c.JSON(200, gin.H{
 			"message": "OK",
 		})
+	})
+	r.GET("/allitems", func(c *gin.Context) {
+		err, items := webui.LoadAllItems(db)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, err)
+		} else {
+			c.JSON(http.StatusOK, items)
+		}
 	})
 	r.POST("/order/:platform", func(c *gin.Context) {
 		platform := c.Param("platform")
@@ -193,6 +203,7 @@ func main() {
 		}
 	})
 	r.Run(":8081")
+	log.Printf("Started OrderHistory-Server at Port: %d", 8081)
 }
 
 func storeAlternate(db *sql.DB, order *alternate) {
