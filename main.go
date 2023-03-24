@@ -81,7 +81,7 @@ func (t TestType) test(kalr string) {
 
 func main() {
 	//pathstring, _ := filepath.Abs("/mnt/d/orderHistory-alternate-test.db")
-	pathstring, _ := filepath.Abs("/mnt/d/orderHistory-sqlite.db")
+	pathstring, _ := filepath.Abs("/mnt/d/20230101_orderHistory-sqlite.db")
 	log.Printf("DB Pfad: %v", pathstring)
 	db, err := sql.Open("sqlite3", pathstring)
 	if err != nil {

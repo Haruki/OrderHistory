@@ -12,6 +12,22 @@ const App = () => {
   const [searchterm, setsearchterm] = useState(
     localStorage.getItem('search') || 'irgendwas'
   );
+
+  //Daten aus der DB
+  const [data, dataSetter] = useState([]);
+  //Daten aus der DB laden mit fetch API
+  const fetchData = async () => {
+    const response = await fetch('http://localhost:8081/allitems')
+      .then((response) => response.json())
+      .then((data) => {
+        dataSetter(data);
+      });
+  };
+  //fetchData mit useEffect aufrufen
+  useEffect(() => {
+    fetchData();
+  }, []);
+
   useEffect(() => {
     localStorage.setItem('search', searchterm);
   }, [searchterm]);
@@ -26,12 +42,33 @@ const App = () => {
     return item.key_id.includes(searchterm);
   });
 
+  const dataFiltered = data.filter(function (item) {
+    return item.Name.includes(searchterm);
+  });
+
   return (
     <div>
       <h1>Vite + {title}</h1>
       <SearchTerm searchterm={searchterm} />
       <List list={arr} />
       <Search setter={setsearchterm} val={searchterm} />
+      <DataList data={dataFiltered} setter={dataSetter} />
+    </div>
+  );
+};
+
+const DataList = ({ data, setter }) => {
+  return (
+    <div>
+      <h2>data</h2>
+      <ul>
+        {data.map((x) => (
+          <li>
+            <i>{x.Vendor}</i>
+            &nbsp;{x.Name}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 };
