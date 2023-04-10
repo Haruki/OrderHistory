@@ -7,10 +7,18 @@ function nvl(value1, value2) {
   return value1;
 }
 
+function sleep(milliseconds) {
+  const date = Date.now();
+  let currentDate = null;
+  do {
+    currentDate = Date.now();
+  } while (currentDate - date < milliseconds);
+}
+
 /*Root Component */
 const App = () => {
   const [searchterm, setsearchterm] = useState(
-    localStorage.getItem('search') || 'irgendwas'
+    localStorage.getItem('search') || ''
   );
 
   //Daten aus der DB
@@ -18,7 +26,10 @@ const App = () => {
   //Daten aus der DB laden mit fetch API
   const fetchData = async () => {
     const response = await fetch('http://localhost:8081/allitems')
-      .then((response) => response.json())
+      .then((response) => {
+        sleep(2000);
+        return response.json();
+      })
       .then((data) => {
         dataSetter(data);
       });
@@ -48,7 +59,7 @@ const App = () => {
 
   return (
     <div>
-      <h1>Vite + {title}</h1>
+      <h1>OrderHistory + {title}</h1>
       <SearchTerm searchterm={searchterm} />
       <List list={arr} />
       <Search setter={setsearchterm} val={searchterm} />

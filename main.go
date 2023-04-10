@@ -95,7 +95,7 @@ func main() {
 	// config := cors.DefaultConfig()
 	// config.AllowAllOrigins = true
 	// router.Use(cors.New(config))
-	r.Use(cors.Default())
+	r.Use(cors.AllowAll())
 	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"message": "OK",
