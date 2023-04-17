@@ -3,10 +3,12 @@ package main
 import (
 	"crypto/sha256"
 	"database/sql"
+	"embed"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
+	"io/fs"
 	"log"
 	"net/http"
 	"net/url"
@@ -79,9 +81,17 @@ func (t TestType) test(kalr string) {
 	log.Printf("variable2: %v %v", t.variable2, kalr)
 }
 
+var (
+	//go:embed reactFrontend/dist
+	webuifs embed.FS
+	//distDirFS     = echo.MustSubFS(dist, "dist")
+	//distIndexHtml = echo.MustSubFS(indexHTML, "dist")
+)
+
 func main() {
 	//pathstring, _ := filepath.Abs("/mnt/d/orderHistory-alternate-test.db")
 	pathstring, _ := filepath.Abs("/mnt/d/20230101_orderHistory-sqlite.db")
+	//pathstring, _ := filepath.Abs("d:/20230101_orderHistory-sqlite.db")
 	log.Printf("DB Pfad: %v", pathstring)
 	db, err := sql.Open("sqlite3", pathstring)
 	if err != nil {
@@ -91,6 +101,9 @@ func main() {
 	//r := gin.Default()
 	gin.SetMode(gin.ReleaseMode)
 	r := gin.New() //Default ersetzt durch New. Default hat einen debug logger, der nicht mehr benötigt wird.
+	r.Use(gin.Recovery())
+	dist, _ := fs.Sub(webuifs, "reactFrontend/dist")
+	r.StaticFS("/webui", http.FS(dist))
 	// same as
 	// config := cors.DefaultConfig()
 	// config.AllowAllOrigins = true

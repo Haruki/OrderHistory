@@ -1,6 +1,10 @@
 import { useState, useEffect } from 'react';
 import reactLogo from './assets/react.svg';
+import spinner from './assets/3.png';
 import './App.css';
+
+var baseurl = 'http://localhost:8081';
+//var baseurl = '';
 
 function nvl(value1, value2) {
   if (value1 == null || value1.length == 0) return value2;
@@ -20,18 +24,25 @@ const App = () => {
   const [searchterm, setsearchterm] = useState(
     localStorage.getItem('search') || ''
   );
+  const [isLoading, setIsLoading] = useState(false);
 
   //Daten aus der DB
   const [data, dataSetter] = useState([]);
   //Daten aus der DB laden mit fetch API
   const fetchData = async () => {
-    const response = await fetch('http://localhost:8081/allitems')
+    setIsLoading(true);
+    const response = await fetch(baseurl + '/allitems')
       .then((response) => {
-        sleep(2000);
+        //sleep(3000);
         return response.json();
       })
       .then((data) => {
-        dataSetter(data);
+        console.log('waiting 3 sec');
+        setTimeout(() => {
+          dataSetter(data);
+          console.log('done');
+          setIsLoading(false);
+        }, 3000);
       });
   };
   //fetchData mit useEffect aufrufen
@@ -63,23 +74,39 @@ const App = () => {
       <SearchTerm searchterm={searchterm} />
       <List list={arr} />
       <Search setter={setsearchterm} val={searchterm} />
-      <DataList data={dataFiltered} setter={dataSetter} />
+      <DataList data={dataFiltered} setter={dataSetter} load={isLoading} />
     </div>
   );
 };
 
-const DataList = ({ data, setter }) => {
+const DataList = ({ data, setter, load }) => {
   return (
     <div>
       <h2>data</h2>
-      <ul>
-        {data.map((x) => (
-          <li>
-            <i>{x.Vendor}</i>
-            &nbsp;{x.Name}
-          </li>
-        ))}
-      </ul>
+      {load ? (
+        <i>
+          loading...
+          <div id='fountainG'>
+            <div id='fountainG_1' className='fountainG'></div>
+            <div id='fountainG_2' className='fountainG'></div>
+            <div id='fountainG_3' className='fountainG'></div>
+            <div id='fountainG_4' className='fountainG'></div>
+            <div id='fountainG_5' className='fountainG'></div>
+            <div id='fountainG_6' className='fountainG'></div>
+            <div id='fountainG_7' className='fountainG'></div>
+            <div id='fountainG_8' className='fountainG'></div>
+          </div>
+        </i>
+      ) : (
+        <ul>
+          {data.map((x) => (
+            <li>
+              <i>{x.Vendor}</i>
+              &nbsp;{x.Name}
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 };
