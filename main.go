@@ -215,8 +215,8 @@ func main() {
 			})
 		}
 	})
+	log.Printf("Starting OrderHistory-Server at Port: %d", 8081)
 	r.Run(":8081")
-	log.Printf("Started OrderHistory-Server at Port: %d", 8081)
 }
 
 func storeAlternate(db *sql.DB, order *alternate) {

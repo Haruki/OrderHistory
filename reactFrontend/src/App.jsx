@@ -1,6 +1,4 @@
 import { useState, useEffect } from 'react';
-import reactLogo from './assets/react.svg';
-import spinner from './assets/3.png';
 import './App.css';
 
 var baseurl = 'http://localhost:8081';
@@ -9,14 +7,6 @@ var baseurl = 'http://localhost:8081';
 function nvl(value1, value2) {
   if (value1 == null || value1.length == 0) return value2;
   return value1;
-}
-
-function sleep(milliseconds) {
-  const date = Date.now();
-  let currentDate = null;
-  do {
-    currentDate = Date.now();
-  } while (currentDate - date < milliseconds);
 }
 
 /*Root Component */
@@ -37,7 +27,6 @@ const App = () => {
         return response.json();
       })
       .then((data) => {
-        console.log('waiting 3 sec');
         setTimeout(() => {
           dataSetter(data);
           console.log('done');
@@ -54,35 +43,24 @@ const App = () => {
     localStorage.setItem('search', searchterm);
   }, [searchterm]);
 
-  const title = 'spaghetti';
-  const arrOrig = [
-    { key_id: 'alpha', value: 'butter' },
-    { key_id: 'beta', value: 'keks' },
-    { key_id: 'gammma', value: 'F1' },
-  ];
-  const arr = arrOrig.filter(function (item) {
-    return item.key_id.includes(searchterm);
-  });
-
   const dataFiltered = data.filter(function (item) {
     return item.Name.includes(searchterm);
   });
 
   return (
     <div>
-      <h1>OrderHistory + {title}</h1>
+      <h1>OrderHistory</h1>
       <SearchTerm searchterm={searchterm} />
-      <List list={arr} />
       <Search setter={setsearchterm} val={searchterm} />
-      <DataList data={dataFiltered} setter={dataSetter} load={isLoading} />
+      <DataList data={dataFiltered} load={isLoading} />
     </div>
   );
 };
 
-const DataList = ({ data, setter, load }) => {
+const DataList = ({ data, load }) => {
   return (
     <div>
-      <h2>data</h2>
+      <h2>Orders:</h2>
       {load ? (
         <i>
           loading...
@@ -100,7 +78,7 @@ const DataList = ({ data, setter, load }) => {
       ) : (
         <ul>
           {data.map((x) => (
-            <li>
+            <li key={x.Id}>
               <i>{x.Vendor}</i>
               &nbsp;{x.Name}
             </li>
@@ -112,25 +90,6 @@ const DataList = ({ data, setter, load }) => {
 };
 
 const SearchTerm = ({ searchterm }) => <h2>{nvl(searchterm, '<leer>')}</h2>;
-
-/* List Component */
-const List = (props) => {
-  return (
-    <ol>
-      {props.list.map((x) => (
-        <Item key={x.key_id} item={x} />
-      ))}
-    </ol>
-  );
-};
-
-/*Item Component*/
-const Item = ({ item: { key_id, value } }) => (
-  <li key={key_id}>
-    <i>{key_id}</i>
-    &nbsp;{value} hallo
-  </li>
-);
 
 /* Search Component */
 const Search = ({ setter, val }) => {
