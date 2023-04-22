@@ -4,11 +4,6 @@ import './App.css';
 var baseurl = 'http://localhost:8081';
 //var baseurl = '';
 
-function nvl(value1, value2) {
-  if (value1 == null || value1.length == 0) return value2;
-  return value1;
-}
-
 /*Root Component */
 const App = () => {
   const [searchterm, setsearchterm] = useState(
@@ -44,13 +39,12 @@ const App = () => {
   }, [searchterm]);
 
   const dataFiltered = data.filter(function (item) {
-    return item.Name.includes(searchterm);
+    return item.Name.toLowerCase().includes(searchterm.toLowerCase());
   });
 
   return (
     <div>
       <h1>OrderHistory</h1>
-      <SearchTerm searchterm={searchterm} />
       <Search setter={setsearchterm} val={searchterm} />
       <DataList data={dataFiltered} load={isLoading} />
     </div>
@@ -76,8 +70,6 @@ const DataList = ({ data, load }) => {
     </div>
   );
 };
-
-const SearchTerm = ({ searchterm }) => <h2>{nvl(searchterm, '<leer>')}</h2>;
 
 /* Search Component */
 const Search = ({ setter, val }) => {
