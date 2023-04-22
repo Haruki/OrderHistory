@@ -60,7 +60,7 @@ const DataList = ({ data, load }) => {
       ) : (
         <ul>
           {data.map((x) => (
-            <OrderItem {...x} />
+            <OrderItem key={x.Id} {...x} />
           ))}
         </ul>
       )}
@@ -68,10 +68,10 @@ const DataList = ({ data, load }) => {
   );
 };
 
-const OrderItem = ({ Id, Vendor, Name, PurchaseDate, Price }) => {
+const OrderItem = ({ Vendor, Name, PurchaseDate, Price }) => {
   return (
     <li>
-      <i>{Vendor}</i>
+      <i> {Vendor}</i>
       &nbsp;{Name}
     </li>
   );
