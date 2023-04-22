@@ -62,19 +62,7 @@ const DataList = ({ data, load }) => {
     <div>
       <h2>Orders:</h2>
       {load ? (
-        <i>
-          loading...
-          <div id='fountainG'>
-            <div id='fountainG_1' className='fountainG'></div>
-            <div id='fountainG_2' className='fountainG'></div>
-            <div id='fountainG_3' className='fountainG'></div>
-            <div id='fountainG_4' className='fountainG'></div>
-            <div id='fountainG_5' className='fountainG'></div>
-            <div id='fountainG_6' className='fountainG'></div>
-            <div id='fountainG_7' className='fountainG'></div>
-            <div id='fountainG_8' className='fountainG'></div>
-          </div>
-        </i>
+        <LoadingHint />
       ) : (
         <ul>
           {data.map((x) => (
@@ -105,5 +93,21 @@ const Search = ({ setter, val }) => {
     </div>
   );
 };
+
+const LoadingHint = () => (
+  <>
+    <i>loading...</i>
+    <div id='fountainG'>
+      <div id='fountainG_1' className='fountainG'></div>
+      <div id='fountainG_2' className='fountainG'></div>
+      <div id='fountainG_3' className='fountainG'></div>
+      <div id='fountainG_4' className='fountainG'></div>
+      <div id='fountainG_5' className='fountainG'></div>
+      <div id='fountainG_6' className='fountainG'></div>
+      <div id='fountainG_7' className='fountainG'></div>
+      <div id='fountainG_8' className='fountainG'></div>
+    </div>
+  </>
+);
 
 export default App;
