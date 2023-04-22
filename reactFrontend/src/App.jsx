@@ -60,14 +60,20 @@ const DataList = ({ data, load }) => {
       ) : (
         <ul>
           {data.map((x) => (
-            <li key={x.Id}>
-              <i>{x.Vendor}</i>
-              &nbsp;{x.Name}
-            </li>
+            <OrderItem {...x} />
           ))}
         </ul>
       )}
     </div>
+  );
+};
+
+const OrderItem = ({ Id, Vendor, Name, PurchaseDate, Price }) => {
+  return (
+    <li>
+      <i>{Vendor}</i>
+      &nbsp;{Name}
+    </li>
   );
 };
 
