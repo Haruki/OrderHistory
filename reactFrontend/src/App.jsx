@@ -58,22 +58,27 @@ const DataList = ({ data, load }) => {
       {load ? (
         <LoadingHint />
       ) : (
-        <ul>
+        <div className='datalist'>
           {data.map((x) => (
             <OrderItem key={x.Id} {...x} />
           ))}
-        </ul>
+        </div>
       )}
     </div>
   );
 };
 
-const OrderItem = ({ Vendor, Name, PurchaseDate, Price }) => {
+const OrderItem = ({ Vendor, Name, PurchaseDate, Price, Anzahl, Currency }) => {
   return (
-    <li>
-      <i> {Vendor}</i>
-      &nbsp;{Name}
-    </li>
+    <article className='orderItem'>
+      <span className='artikel'>{Name}</span>
+      <span className='platform'>{Vendor}</span>
+      <span className='purchaseDate'>{PurchaseDate}</span>
+      <span className='anzahl'>{Anzahl}</span>
+      <span className='price'>{Price}</span>
+      <span className='currency'>{Currency}</span>
+      <span className='sonstiges'>lalala sonstiges lalal</span>
+    </article>
   );
 };
 

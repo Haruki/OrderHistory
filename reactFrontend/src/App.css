@@ -4,3 +4,72 @@
   padding: 2rem;
   text-align: center;
 }
+.orderItem {
+  display: grid;
+  grid-template-columns: 5rem 7rem 2rem 1rem auto;
+  grid-template-areas:
+    'artikel artikel artikel artikel artikel'
+    'platform purchaseDate anzahl currency price '
+    'sonstiges sonstiges sonstiges sonstiges sonstiges';
+  padding: 10px;
+}
+
+.datalist {
+  background-color: darkslategray;
+  padding: 1rem;
+  margin: 1rem;
+  border-radius: 1rem;
+  color: white;
+  font-size: 1.5rem;
+  font-weight: 500;
+  /*text-align: justify;*/
+}
+
+.artikel {
+  grid-area: artikel;
+  font-size: 1.2rem;
+  font-weight: 400;
+  text-align: left;
+}
+
+.purchaseDate {
+  grid-area: purchaseDate;
+  font-size: 1.2rem;
+  font-weight: 400;
+  text-align: left;
+}
+
+.anzahl {
+  grid-area: anzahl;
+  font-size: 1.2rem;
+  font-weight: 400;
+  text-align: left;
+}
+
+.price {
+  grid-area: price;
+  font-size: 1.2rem;
+  font-weight: 400;
+  text-align: left;
+}
+
+.currency {
+  grid-area: currency;
+  font-size: 1.2rem;
+  font-weight: 400;
+  text-align: left;
+}
+
+.platform {
+  grid-area: platform;
+  font-size: 1.2rem;
+  font-weight: 400;
+  text-align: left;
+}
+
+.sonstiges {
+  grid-area: sonstiges;
+  font-size: 1.2rem;
+  font-weight: 400;
+  text-align: left;
+}
