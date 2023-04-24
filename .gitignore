@@ -15,3 +15,7 @@ main
 # Dependency directories (remove the comment below to include it)
 # vendor/
 __debug_bin
+OrderHistory
+OrderHistory.exe
+main
+main.exe
