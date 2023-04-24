@@ -13,19 +13,20 @@ type Item struct {
 	Id           int
 	Currency     string
 	Anzahl       *int `json:"Anzahl,omitempty"`
+	ImgFile      string
 }
 
 func LoadAllItems(db *sql.DB) (error, []Item) {
 	var result []Item
 	var item Item
-	rows, err := db.Query("select item_name, vendor_platform, id, purchase_date, price, 1, currency from t_purchase", 1)
+	rows, err := db.Query("select item_name, vendor_platform, id, purchase_date, price, 1, currency, img_file from t_purchase", 1)
 	if err != nil {
 		log.Fatal(err)
 		return err, nil
 	}
 	defer rows.Close()
 	for rows.Next() {
-		err := rows.Scan(&item.Name, &item.Vendor, &item.Id, &item.PurchaseDate, &item.Price, &item.Anzahl, &item.Currency)
+		err := rows.Scan(&item.Name, &item.Vendor, &item.Id, &item.PurchaseDate, &item.Price, &item.Anzahl, &item.Currency, &item.ImgFile)
 		if err != nil {
 			log.Fatal(err)
 			return err, nil

@@ -4,8 +4,8 @@ import ebaysvg from '/EBay_logo.svg';
 import alternatesvg from '/Alternate.de_logo.svg';
 import aliextrassvg from '/Aliexpress_logo.svg';
 
-var baseurl = 'http://localhost:8081';
-//var baseurl = '';
+//var baseurl = 'http://localhost:8081';
+var baseurl = '';
 
 /*Root Component */
 const App = () => {

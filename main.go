@@ -40,6 +40,9 @@ func main() {
 	r := gin.New() //Default ersetzt durch New. Default hat einen debug logger, der nicht mehr benötigt wird.
 	r.Use(gin.Recovery())
 	r.Use(cors.AllowAll())
+	//Images:
+	r.Static("/img", "./img")
+	//WebUI:
 	dist, _ := fs.Sub(webuifs, "reactFrontend/dist")
 	r.StaticFS("/webui", http.FS(dist)) //package.json -> "build": "vite build --base=/webui/"
 	r.GET("/ping", func(c *gin.Context) {
