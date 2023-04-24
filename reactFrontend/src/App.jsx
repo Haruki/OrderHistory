@@ -70,14 +70,14 @@ const DataList = ({ data, load }) => {
 
 const OrderItem = ({ Vendor, Name, PurchaseDate, Price, Anzahl, Currency }) => {
   return (
-    <article className='orderItem'>
-      <span className='artikel'>{Name}</span>
-      <span className='platform'>{Vendor}</span>
-      <span className='purchaseDate'>{PurchaseDate}</span>
-      <span className='anzahl'>{Anzahl}</span>
-      <span className='price'>{Price}</span>
-      <span className='currency'>{Currency}</span>
-      <span className='sonstiges'>lalala sonstiges lalal</span>
+    <article className='entry orderItem'>
+      <span className='entry artikel'>{Name}</span>
+      <span className='entry platform'>{Vendor}</span>
+      <span className='entry purchaseDate'>{PurchaseDate}</span>
+      <span className='entry anzahl'>{Anzahl}</span>
+      <span className='entry price'>{Price}</span>
+      <span className='entry currency'>{Currency}</span>
+      <span className='entry sonstiges'>lalala sonstiges lalal</span>
     </article>
   );
 };
