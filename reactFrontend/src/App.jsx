@@ -1,5 +1,8 @@
 import { useState, useEffect } from 'react';
 import './App.css';
+import ebaysvg from '/EBay_logo.svg';
+import alternatesvg from '/Alternate.de_logo.svg';
+import aliextrassvg from '/Aliexpress_logo.svg';
 
 var baseurl = 'http://localhost:8081';
 //var baseurl = '';
@@ -72,7 +75,8 @@ const OrderItem = ({ Vendor, Name, PurchaseDate, Price, Anzahl, Currency }) => {
   return (
     <article className='entry orderItem'>
       <span className='entry artikel'>{Name}</span>
-      <span className='entry platform'>{Vendor}</span>
+      {/*<span className='entry platform'>{Vendor}</span>*/}
+      <Platform Vendor={Vendor} />
       <span className='entry purchaseDate'>{PurchaseDate}</span>
       <span className='entry anzahl'>{Anzahl}</span>
       <span className='entry price'>{Price}</span>
@@ -80,6 +84,23 @@ const OrderItem = ({ Vendor, Name, PurchaseDate, Price, Anzahl, Currency }) => {
       <span className='entry sonstiges'>lalala sonstiges lalal</span>
     </article>
   );
+};
+
+const Platform = ({ Vendor }) => {
+  switch (Vendor) {
+    case 'ebay':
+      return <img className='entry platform' src={ebaysvg} alt='ebay' />;
+    case 'alternate':
+      return (
+        <img className='entry platform' src={alternatesvg} alt='alternate' />
+      );
+    case 'aliexpress':
+      return (
+        <img className='entry platform' src={aliextrassvg} alt='aliexpress' />
+      );
+    default:
+      return <span className='entry platform'>{Vendor}</span>;
+  }
 };
 
 /* Search Component */

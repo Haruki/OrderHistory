@@ -18,7 +18,7 @@
     rgba(31, 31, 31, 1) 100%
   );
   display: grid;
-  grid-template-columns: 5rem 7rem 2rem 1rem max-content;
+  grid-template-columns: 7rem 7rem 2rem 1rem max-content;
   grid-template-rows: auto auto auto;
   grid-template-areas:
     'artikel artikel artikel artikel artikel'
@@ -58,6 +58,7 @@
 
 .platform {
   grid-area: platform;
+  height: 24px;
 }
 
 .sonstiges {
