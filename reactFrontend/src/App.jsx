@@ -4,8 +4,8 @@ import ebaysvg from '/EBay_logo.svg';
 import alternatesvg from '/Alternate.de_logo.svg';
 import aliextrassvg from '/Aliexpress_logo.svg';
 
-//var baseurl = 'http://localhost:8081';
-var baseurl = '';
+var baseurl = 'http://localhost:8081';
+//var baseurl = '';
 
 /*Root Component */
 const App = () => {
@@ -71,18 +71,41 @@ const DataList = ({ data, load }) => {
   );
 };
 
-const OrderItem = ({ Vendor, Name, PurchaseDate, Price, Anzahl, Currency }) => {
+const OrderItem = ({
+  Vendor,
+  Name,
+  PurchaseDate,
+  Price,
+  Anzahl,
+  Currency,
+  ImgFile,
+}) => {
   return (
     <article className='entry orderItem'>
+      <Picture ImgFile={ImgFile} />
       <span className='entry artikel'>{Name}</span>
       {/*<span className='entry platform'>{Vendor}</span>*/}
       <Platform Vendor={Vendor} />
       <span className='entry purchaseDate'>{PurchaseDate}</span>
       <span className='entry anzahl'>{Anzahl}</span>
-      <span className='entry price'>{Price}</span>
+      <span className='entry price'>{Price / 100}</span>
       <span className='entry currency'>{Currency}</span>
       <span className='entry sonstiges'>lalala sonstiges lalal</span>
     </article>
+  );
+};
+
+const Picture = ({ ImgFile }) => {
+  const getFileName = (ImgFile) => {
+    let lastSlashIndex = ImgFile.lastIndexOf('/');
+    let filename = ImgFile.substring(lastSlashIndex + 1, ImgFile.length);
+    return filename;
+  };
+  return (
+    <img
+      className='picture'
+      src={`${baseurl}/img/backup/${getFileName(ImgFile)}`}
+    />
   );
 };
 
