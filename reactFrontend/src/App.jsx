@@ -76,9 +76,9 @@ const OrderItem = ({
   Name,
   PurchaseDate,
   Price,
-  Anzahl,
   Currency,
   ImgFile,
+  Div,
 }) => {
   return (
     <article className='entry orderItem'>
@@ -87,12 +87,15 @@ const OrderItem = ({
       {/*<span className='entry platform'>{Vendor}</span>*/}
       <Platform Vendor={Vendor} />
       <span className='entry purchaseDate'>{PurchaseDate}</span>
-      <span className='entry anzahl'>{Anzahl}</span>
       <span className='entry price'>{Price / 100}</span>
       <span className='entry currency'>{Currency}</span>
-      <span className='entry sonstiges'>lalala sonstiges lalal</span>
+      <Sonstiges Div={Div} />
     </article>
   );
+};
+
+const Sonstiges = ({ Div }) => {
+  return <span className='entry sonstiges'>test</span>;
 };
 
 const Picture = ({ ImgFile }) => {

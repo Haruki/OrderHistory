@@ -18,12 +18,12 @@
     rgba(31, 31, 31, 1) 100%
   );
   display: grid;
-  grid-template-columns: 6rem 7rem 7rem 2rem 1rem max-content;
+  grid-template-columns: 6rem 7rem 7rem 1rem max-content;
   grid-template-rows: auto auto auto;
   grid-template-areas:
-    'picture artikel artikel artikel artikel artikel'
-    'picture platform purchaseDate anzahl currency price '
-    'picture sonstiges sonstiges sonstiges sonstiges sonstiges';
+    'picture artikel artikel artikel artikel'
+    'picture platform purchaseDate currency price '
+    'picture sonstiges sonstiges sonstiges sonstiges';
   border-radius: 1rem;
   padding: 1rem;
   margin-bottom: 1rem;
@@ -33,7 +33,7 @@
   grid-area: picture;
   height: 80px;
   width: 80px;
-  border-radius: 1rem;
+  border-radius: 0.5rem;
   background-color: #1a1a1a;
   background-image: url('https://steamcdn-a.akamaihd.net/steam/apps/271590/header.jpg?t=1603989580');
   background-size: cover;
@@ -77,4 +77,5 @@
 
 .sonstiges {
   grid-area: sonstiges;
+  display: flex;
 }
