@@ -46,7 +46,6 @@ func main() {
 func update(div *string, vendor string) {
 	tD := *div
 	var trimmedDivArray []string
-	fmt.Println("test: " + tD)
 	err := json.Unmarshal([]byte(tD), &trimmedDivArray)
 	if err != nil {
 		log.Fatalf("Error unmarshalling div: %v", err)
@@ -61,22 +60,27 @@ func update(div *string, vendor string) {
 	case "aliexpress":
 		divJsonString = updateAliexpress(trimmedDivArray)
 	}
+	fmt.Printf("Result: %s\n", divJsonString)
 	div = &divJsonString
 }
 
 func updateAliexpress(trimmedDivArray []string) string {
 	var aliexpress Aliexpress
 	var err error
-	*aliexpress.Option = trimmedDivArray[0][1 : len(trimmedDivArray[0])-1]
-	*aliexpress.Haendler = trimmedDivArray[1][1 : len(trimmedDivArray[1])-1]
-	*aliexpress.Einzelpreis, err = strconv.Atoi(trimmedDivArray[2][1 : len(trimmedDivArray[2])-1])
+	aliexpress.Option = &trimmedDivArray[0]
+	aliexpress.Haendler = &trimmedDivArray[1]
+	var einzelpreisInt int
+	einzelpreisInt, err = strconv.Atoi(trimmedDivArray[2])
 	if err != nil {
 		log.Fatal(err)
 	}
-	*aliexpress.Anzahl, err = strconv.Atoi(trimmedDivArray[3][1 : len(trimmedDivArray[3])-1])
+	aliexpress.Einzelpreis = &einzelpreisInt
+	var anzahlInt int
+	anzahlInt, err = strconv.Atoi(trimmedDivArray[3])
 	if err != nil {
 		log.Fatal(err)
 	}
+	aliexpress.Anzahl = &anzahlInt
 	divJsonBytes, err := json.Marshal(aliexpress)
 	if err != nil {
 		log.Fatal(err)
@@ -88,8 +92,8 @@ func updateAliexpress(trimmedDivArray []string) string {
 func updateEbay(trimmedDivArray []string) string {
 	var ebay Ebay
 	var err error
-	ebay.Artikelnummer = trimmedDivArray[0][1 : len(trimmedDivArray[0])-1]
-	ebay.Haendler = trimmedDivArray[1][1 : len(trimmedDivArray[1])-1]
+	ebay.Artikelnummer = trimmedDivArray[0]
+	ebay.Haendler = trimmedDivArray[1]
 	divJsonBytes, err := json.Marshal(ebay)
 	if err != nil {
 		log.Fatal(err)
@@ -101,7 +105,7 @@ func updateEbay(trimmedDivArray []string) string {
 func updateAlternate(trimmedDivArray []string) string {
 	var alternate Alternate
 	var err error
-	anzahl, err := strconv.Atoi(trimmedDivArray[0][1 : len(trimmedDivArray[1])-1])
+	anzahl, err := strconv.Atoi(trimmedDivArray[0])
 	if err != nil {
 		log.Fatal(err)
 	}
