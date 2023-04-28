@@ -21,7 +21,7 @@ type Ebay struct {
 }
 
 type Aliexpress struct {
-	Option      *string `json:"Option,omitempty"`
+	Option      *string `json:",omitempty"`
 	Haendler    *string `json:"Haendler,omitempty"`
 	Einzelpreis *int    `json:"Einzelpreis,omitempty"`
 	Anzahl      *int    `json:"Anzahl,omitempty"`
@@ -67,20 +67,30 @@ func update(div *string, vendor string) {
 func updateAliexpress(trimmedDivArray []string) string {
 	var aliexpress Aliexpress
 	var err error
-	aliexpress.Option = &trimmedDivArray[0]
-	aliexpress.Haendler = &trimmedDivArray[1]
+	if &trimmedDivArray[0] != nil && len(trimmedDivArray[0]) > 2 {
+		aliexpress.Option = &trimmedDivArray[0]
+	} else {
+		aliexpress.Option = nil
+	}
+	if &trimmedDivArray[1] != nil {
+		aliexpress.Haendler = &trimmedDivArray[1]
+	}
 	var einzelpreisInt int
-	einzelpreisInt, err = strconv.Atoi(trimmedDivArray[2])
-	if err != nil {
-		log.Fatal(err)
+	if trimmedDivArray[2] != "" {
+		einzelpreisInt, err = strconv.Atoi(trimmedDivArray[2])
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 	aliexpress.Einzelpreis = &einzelpreisInt
 	var anzahlInt int
-	anzahlInt, err = strconv.Atoi(trimmedDivArray[3])
-	if err != nil {
-		log.Fatal(err)
+	if trimmedDivArray[3] != "" {
+		anzahlInt, err = strconv.Atoi(trimmedDivArray[3])
+		if err != nil {
+			log.Fatal(err)
+		}
+		aliexpress.Anzahl = &anzahlInt
 	}
-	aliexpress.Anzahl = &anzahlInt
 	divJsonBytes, err := json.Marshal(aliexpress)
 	if err != nil {
 		log.Fatal(err)
