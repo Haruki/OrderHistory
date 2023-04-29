@@ -12,12 +12,12 @@ import (
 )
 
 type Alternate struct {
-	Anzahl int
+	Anzahl *int `json:"Anzahl,omitempty"`
 }
 
 type Ebay struct {
-	Artikelnummer string
-	Haendler      string
+	Artikelnummer *string `json:"Artikelnummer,omitempty"`
+	Haendler      *string `json:"Haendler,omitempty"`
 }
 
 type Aliexpress struct {
@@ -67,30 +67,49 @@ func update(div *string, vendor string) {
 func updateAliexpress(trimmedDivArray []string) string {
 	var aliexpress Aliexpress
 	var err error
+	//Option
 	if &trimmedDivArray[0] != nil && len(trimmedDivArray[0]) > 2 {
 		aliexpress.Option = &trimmedDivArray[0]
 	} else {
 		aliexpress.Option = nil
 	}
-	if &trimmedDivArray[1] != nil {
+	//Haendler
+	if &trimmedDivArray[1] != nil && len(trimmedDivArray[1]) > 2 {
 		aliexpress.Haendler = &trimmedDivArray[1]
+	} else {
+		aliexpress.Haendler = nil
 	}
+	//Einzelpreis
 	var einzelpreisInt int
-	if trimmedDivArray[2] != "" {
+	if &trimmedDivArray[2] != nil && len(trimmedDivArray[2]) > 0 {
 		einzelpreisInt, err = strconv.Atoi(trimmedDivArray[2])
 		if err != nil {
 			log.Fatal(err)
 		}
+		if einzelpreisInt > 0 {
+			aliexpress.Einzelpreis = &einzelpreisInt
+		} else {
+			aliexpress.Einzelpreis = nil
+		}
+	} else {
+		aliexpress.Einzelpreis = nil
 	}
-	aliexpress.Einzelpreis = &einzelpreisInt
+	//Anzahl
 	var anzahlInt int
-	if trimmedDivArray[3] != "" {
+	if &trimmedDivArray[3] != nil && len(trimmedDivArray[3]) > 0 {
 		anzahlInt, err = strconv.Atoi(trimmedDivArray[3])
 		if err != nil {
 			log.Fatal(err)
 		}
-		aliexpress.Anzahl = &anzahlInt
+		if anzahlInt > 0 {
+			aliexpress.Anzahl = &anzahlInt
+		} else {
+			aliexpress.Anzahl = nil
+		}
+	} else {
+		aliexpress.Anzahl = nil
 	}
+	//Write to json
 	divJsonBytes, err := json.Marshal(aliexpress)
 	if err != nil {
 		log.Fatal(err)
@@ -102,8 +121,19 @@ func updateAliexpress(trimmedDivArray []string) string {
 func updateEbay(trimmedDivArray []string) string {
 	var ebay Ebay
 	var err error
-	ebay.Artikelnummer = trimmedDivArray[0]
-	ebay.Haendler = trimmedDivArray[1]
+	//Artikelnummer
+	if &trimmedDivArray[0] != nil && len(trimmedDivArray[0]) > 2 {
+		ebay.Artikelnummer = &trimmedDivArray[0]
+	} else {
+		ebay.Artikelnummer = nil
+	}
+	//Haendler
+	if &trimmedDivArray[1] != nil && len(trimmedDivArray[1]) > 2 {
+		ebay.Haendler = &trimmedDivArray[1]
+	} else {
+		ebay.Haendler = nil
+	}
+	//Write to json
 	divJsonBytes, err := json.Marshal(ebay)
 	if err != nil {
 		log.Fatal(err)
@@ -114,13 +144,25 @@ func updateEbay(trimmedDivArray []string) string {
 
 func updateAlternate(trimmedDivArray []string) string {
 	var alternate Alternate
-	var err error
-	anzahl, err := strconv.Atoi(trimmedDivArray[0])
+	//Anzahl
+	if &trimmedDivArray[0] != nil && len(trimmedDivArray[0]) > 0 {
+		anzahl, err := strconv.Atoi(trimmedDivArray[0])
+		if err != nil {
+			log.Fatal(err)
+		}
+		if anzahl > 0 {
+			alternate.Anzahl = &anzahl
+		} else {
+			alternate.Anzahl = nil
+		}
+	} else {
+		alternate.Anzahl = nil
+	}
+	//Write to json
+	divJsonBytes, err := json.Marshal(alternate)
 	if err != nil {
 		log.Fatal(err)
 	}
-	alternate.Anzahl = anzahl
-	divJsonBytes, err := json.Marshal(alternate)
 	divJsonString := string(divJsonBytes)
 	return divJsonString
 }
