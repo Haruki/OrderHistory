@@ -30,21 +30,36 @@ type Aliexpress struct {
 type Div struct {
 	Vendor string
 	Div    string
+	Id     int
 }
 
 func main() {
-	divs, err := loadDivFromSqlLiteDB()
+	pathstring, _ := filepath.Abs("/mnt/d/20230101_orderHistory-sqlite.db")
+	//pathstring, _ := filepath.Abs("d:/20230101_orderHistory-sqlite.db")
+	log.Printf("DB Pfad: %v", pathstring)
+	db, err := sql.Open("sqlite3", pathstring)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
+
+	divs, err := loadDivFromSqlLiteDB(db)
 	if err != nil {
 		log.Fatal(err)
 	}
 	for index, div := range divs {
-		fmt.Printf("current values: Vendor: %s, div: %s, index: %d\n", div.Vendor, div.Div, index)
-		update(&divs[index].Div, div.Vendor)
+		//fmt.Printf("current values: Id: %d, Vendor: %s, div: %s, index: %d\n", div.Id, div.Vendor, div.Div, index)
+		divs[index].Div = update(divs[index].Div, div.Vendor)
 	}
+	// for _, div := range divs {
+	// 	fmt.Printf("Id: %d, Vendor: %s, div: %s\n", div.Id, div.Vendor, div.Div)
+	// }
+	updateDivInSqlLiteDB(divs, db)
+	fmt.Println("Update complete")
 }
 
-func update(div *string, vendor string) {
-	tD := *div
+func update(div string, vendor string) string {
+	tD := div
 	var trimmedDivArray []string
 	err := json.Unmarshal([]byte(tD), &trimmedDivArray)
 	if err != nil {
@@ -60,8 +75,7 @@ func update(div *string, vendor string) {
 	case "aliexpress":
 		divJsonString = updateAliexpress(trimmedDivArray)
 	}
-	fmt.Printf("Result: %s\n", divJsonString)
-	div = &divJsonString
+	return divJsonString
 }
 
 func updateAliexpress(trimmedDivArray []string) string {
@@ -167,20 +181,32 @@ func updateAlternate(trimmedDivArray []string) string {
 	return divJsonString
 }
 
-// Funktion zum Laden aller Zeilen mit dem Feld "div" in der Tabelle T_PURCHASE aus der SqlLite DB
-func loadDivFromSqlLiteDB() ([]Div, error) {
-	pathstring, _ := filepath.Abs("/mnt/d/20230101_orderHistory-sqlite.db")
-	//pathstring, _ := filepath.Abs("d:/20230101_orderHistory-sqlite.db")
-	log.Printf("DB Pfad: %v", pathstring)
-	db, err := sql.Open("sqlite3", pathstring)
-	if err != nil {
-		log.Fatal(err)
+// Funktion zum Updaten aller Zeilen mit dem Feld "div" in der Tablle T_PURCHASE mit einem neuen Wert für "div"
+func updateDivInSqlLiteDB(divs []Div, db *sql.DB) error {
+	for _, div := range divs {
+		statement := "update t_purchase set div = ? where id = ?"
+		stmt, err := db.Prepare(statement)
+		if err != nil {
+			log.Fatal(err)
+			return err
+		}
+		defer stmt.Close()
+		_, err = stmt.Exec(div.Div, div.Id)
+		if err != nil {
+			log.Fatal(err)
+			return err
+		}
 	}
+	return nil
+}
+
+// Funktion zum Laden aller Zeilen mit dem Feld "div" in der Tabelle T_PURCHASE aus der SqlLite DB
+func loadDivFromSqlLiteDB(db *sql.DB) ([]Div, error) {
 
 	var div Div
 	var divArray []Div = make([]Div, 0)
 
-	var query string = "select vendor_platform,div from t_purchase order by id desc"
+	var query string = "select id, vendor_platform,div from t_purchase order by id desc"
 	rows, err := db.Query(query)
 	if err != nil {
 		log.Fatal(err)
@@ -188,7 +214,7 @@ func loadDivFromSqlLiteDB() ([]Div, error) {
 	}
 	defer rows.Close()
 	for rows.Next() {
-		err := rows.Scan(&div.Vendor, &div.Div)
+		err := rows.Scan(&div.Id, &div.Vendor, &div.Div)
 		if err != nil {
 			log.Fatal(err)
 			return nil, err
