@@ -95,7 +95,18 @@ const OrderItem = ({
 };
 
 const Sonstiges = ({ Div }) => {
-  return <span className='entry sonstiges'>test</span>;
+  var divObject = JSON.parse(Div);
+  var divEntries = Object.entries(divObject);
+  return (
+    <div className='entry sonstiges'>
+      {divEntries.map(([key, value]) => (
+        <span key={key}>
+          {key}:{' '}
+          {key.toLowerCase().indexOf('preis') == -1 ? value : value / 100}
+        </span>
+      ))}
+    </div>
+  );
 };
 
 const Picture = ({ ImgFile }) => {

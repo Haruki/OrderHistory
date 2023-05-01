@@ -78,4 +78,7 @@
 .sonstiges {
   grid-area: sonstiges;
   display: flex;
+  gap: 1rem;
+  color: rgb(177, 177, 177);
+  font-size: 0.9em;
 }
