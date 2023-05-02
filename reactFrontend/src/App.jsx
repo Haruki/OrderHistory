@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import './App.css';
 import ebaysvg from '/EBay_logo.svg';
 import alternatesvg from '/Alternate.de_logo.svg';
@@ -37,6 +37,40 @@ const App = () => {
     fetchData();
   }, []);
 
+  function readFileAsync(file) {
+    return new Promise((resolve, reject) => {
+      let reader = new FileReader();
+      reader.onload = () => {
+        resolve(reader.result);
+      };
+      reader.onerror = reject;
+      reader.readAsText(file);
+    });
+  }
+
+  //Function for fileupload to api
+  const handleFile = async (file) => {
+    let content = await readFileAsync(file);
+    let obj = JSON.parse(content);
+    console.log('PI:' + obj.FNN.Allgemein.PI);
+    console.log(content);
+    console.log(JSON.stringify(content));
+    fetch(baseurl + '/api/upload', {
+      method: 'POST',
+      body: JSON.stringify(obj),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log('Success:', data);
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+  };
+
   useEffect(() => {
     localStorage.setItem('search', searchterm);
   }, [searchterm]);
@@ -49,12 +83,12 @@ const App = () => {
     <div>
       <h1>OrderHistory</h1>
       <Search setter={setsearchterm} val={searchterm} />
-      <DataList data={dataFiltered} load={isLoading} />
+      <DataList data={dataFiltered} load={isLoading} handleFile={handleFile} />
     </div>
   );
 };
 
-const DataList = ({ data, load }) => {
+const DataList = ({ data, load, handleFile }) => {
   return (
     <div>
       <h2>Orders:</h2>
@@ -63,7 +97,7 @@ const DataList = ({ data, load }) => {
       ) : (
         <div className='datalist'>
           {data.map((x) => (
-            <OrderItem key={x.Id} {...x} />
+            <OrderItem key={x.Id} {...x} handleFile={handleFile} />
           ))}
         </div>
       )}
@@ -79,10 +113,11 @@ const OrderItem = ({
   Currency,
   ImgFile,
   Div,
+  handleFile,
 }) => {
   return (
     <article className='entry orderItem'>
-      <Picture ImgFile={ImgFile} />
+      <Picture ImgFile={ImgFile} handleFile={handleFile} />
       <span className='entry artikel'>{Name}</span>
       {/*<span className='entry platform'>{Vendor}</span>*/}
       <Platform Vendor={Vendor} />
@@ -109,17 +144,34 @@ const Sonstiges = ({ Div }) => {
   );
 };
 
-const Picture = ({ ImgFile }) => {
+const Picture = ({ ImgFile, handleFile }) => {
+  const hiddenFileInput = useRef(null);
   const getFileName = (ImgFile) => {
     let lastSlashIndex = ImgFile.lastIndexOf('/');
     let filename = ImgFile.substring(lastSlashIndex + 1, ImgFile.length);
     return filename;
   };
+  const handleClick = (event) => {
+    hiddenFileInput.current.click();
+  };
+  const handleChange = (event) => {
+    const fileUploaded = event.target.files[0];
+    handleFile(fileUploaded);
+  };
   return (
-    <img
-      className='picture'
-      src={`${baseurl}/img/backup/${getFileName(ImgFile)}`}
-    />
+    <>
+      <img
+        className='picture'
+        src={`${baseurl}/img/backup/${getFileName(ImgFile)}`}
+        onClick={handleClick}
+      />
+      <input
+        type='file'
+        ref={hiddenFileInput}
+        onChange={handleChange}
+        style={{ display: 'none' }}
+      />
+    </>
   );
 };
 
