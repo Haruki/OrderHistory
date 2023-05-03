@@ -37,30 +37,14 @@ const App = () => {
     fetchData();
   }, []);
 
-  function readFileAsync(file) {
-    return new Promise((resolve, reject) => {
-      let reader = new FileReader();
-      reader.onload = () => {
-        resolve(reader.result);
-      };
-      reader.onerror = reject;
-      reader.readAsText(file);
-    });
-  }
-
   //Function for fileupload to api
-  const handleFile = async (file) => {
-    let content = await readFileAsync(file);
-    let obj = JSON.parse(content);
-    console.log('PI:' + obj.FNN.Allgemein.PI);
-    console.log(content);
-    console.log(JSON.stringify(content));
-    fetch(baseurl + '/api/upload', {
+  const handleFile = async (file, itemId) => {
+    let formData = new FormData();
+    formData.append('file', file);
+    formData.append('itemId', itemId);
+    fetch(baseurl + '/imageUpload', {
       method: 'POST',
-      body: JSON.stringify(obj),
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      body: formData,
     })
       .then((response) => response.json())
       .then((data) => {
@@ -106,6 +90,7 @@ const DataList = ({ data, load, handleFile }) => {
 };
 
 const OrderItem = ({
+  Id,
   Vendor,
   Name,
   PurchaseDate,
@@ -114,10 +99,11 @@ const OrderItem = ({
   ImgFile,
   Div,
   handleFile,
+  itemId,
 }) => {
   return (
     <article className='entry orderItem'>
-      <Picture ImgFile={ImgFile} handleFile={handleFile} />
+      <Picture ImgFile={ImgFile} handleFile={handleFile} itemId={Id} />
       <span className='entry artikel'>{Name}</span>
       {/*<span className='entry platform'>{Vendor}</span>*/}
       <Platform Vendor={Vendor} />
@@ -144,7 +130,7 @@ const Sonstiges = ({ Div }) => {
   );
 };
 
-const Picture = ({ ImgFile, handleFile }) => {
+const Picture = ({ ImgFile, handleFile, itemId }) => {
   const hiddenFileInput = useRef(null);
   const getFileName = (ImgFile) => {
     let lastSlashIndex = ImgFile.lastIndexOf('/');
@@ -156,7 +142,7 @@ const Picture = ({ ImgFile, handleFile }) => {
   };
   const handleChange = (event) => {
     const fileUploaded = event.target.files[0];
-    handleFile(fileUploaded);
+    handleFile(fileUploaded, itemId);
   };
   return (
     <>

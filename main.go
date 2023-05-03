@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"embed"
+	"fmt"
 	"io/fs"
 	"log"
 	"net/http"
@@ -71,6 +72,26 @@ func main() {
 				"message": "Fail (Platform not supported yet)",
 			})
 		}
+	})
+	r.POST("/imageUpload", func(c *gin.Context) {
+		id := c.PostForm("itemId")
+		fmt.Println(id)
+		file, err := c.FormFile("file")
+		// The file cannot be received.
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+				"message": "No file is received",
+			})
+			return
+		}
+		err = c.SaveUploadedFile(file, "./img/backup/"+file.Filename)
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+				"message": "Error while saving file",
+			})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"message": "Your file has been successfully uploaded."})
 	})
 	log.Printf("Starting OrderHistory-Server at Port: %d", 8081)
 	r.Run(":8081")
