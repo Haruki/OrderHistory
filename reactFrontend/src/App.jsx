@@ -38,10 +38,11 @@ const App = () => {
   }, []);
 
   //Function for fileupload to api
-  const handleFile = async (file, itemId) => {
+  const handleFile = async (file, itemId, vendor) => {
     let formData = new FormData();
     formData.append('file', file);
     formData.append('itemId', itemId);
+    formData.append('vendor', vendor);
     fetch(baseurl + '/imageUpload', {
       method: 'POST',
       body: formData,
@@ -103,7 +104,12 @@ const OrderItem = ({
 }) => {
   return (
     <article className='entry orderItem'>
-      <Picture ImgFile={ImgFile} handleFile={handleFile} itemId={Id} />
+      <Picture
+        ImgFile={ImgFile}
+        handleFile={handleFile}
+        itemId={Id}
+        vendor={Vendor}
+      />
       <span className='entry artikel'>{Name}</span>
       {/*<span className='entry platform'>{Vendor}</span>*/}
       <Platform Vendor={Vendor} />
@@ -130,7 +136,7 @@ const Sonstiges = ({ Div }) => {
   );
 };
 
-const Picture = ({ ImgFile, handleFile, itemId }) => {
+const Picture = ({ ImgFile, handleFile, itemId, vendor }) => {
   const hiddenFileInput = useRef(null);
   const getFileName = (ImgFile) => {
     let lastSlashIndex = ImgFile.lastIndexOf('/');
@@ -142,7 +148,7 @@ const Picture = ({ ImgFile, handleFile, itemId }) => {
   };
   const handleChange = (event) => {
     const fileUploaded = event.target.files[0];
-    handleFile(fileUploaded, itemId);
+    handleFile(fileUploaded, itemId, vendor);
   };
   return (
     <>

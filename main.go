@@ -1,13 +1,18 @@
 package main
 
 import (
+	"crypto/sha256"
 	"database/sql"
 	"embed"
 	"fmt"
 	"io/fs"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"path/filepath"
+	"strconv"
+
+	orderHistoryDb "github.com/haruki/OrderHistory/db"
 
 	webui "github.com/haruki/OrderHistory/ui_api"
 
@@ -75,6 +80,13 @@ func main() {
 	})
 	r.POST("/imageUpload", func(c *gin.Context) {
 		id := c.PostForm("itemId")
+		intId, err := strconv.Atoi(id)
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+				"message": "No valid id",
+			})
+			return
+		}
 		vendor := c.PostForm("vendor")
 		file, err := c.FormFile("file")
 		// The file cannot be received.
@@ -84,17 +96,42 @@ func main() {
 			})
 			return
 		}
-		//get filename extension
+		//get filename extension (returns string including the dot)
 		ext := filepath.Ext(file.Filename)
-		newFileName := fmt.Sprintf("./img/backup/%s_%s.%s", vendor, id, ext)
-		err = c.SaveUploadedFile(file, newFileName)
+		newDbFileName := fmt.Sprintf("./img/%s_%s%s", vendor, id, ext)
+		newFilePathName := fmt.Sprintf("./img/backup/%s_%s%s", vendor, id, ext)
+		err = c.SaveUploadedFile(file, newFilePathName)
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 				"message": "Error while saving file",
 			})
 			return
 		}
-		c.JSON(http.StatusOK, gin.H{"message": "Your file has been successfully uploaded."})
+		//read file into []byte
+		realfile, err := file.Open()
+		if err != nil {
+
+		}
+		defer realfile.Close()
+		fileBytes, err := ioutil.ReadAll(realfile)
+		if err != nil {
+
+		}
+		//create sha256 hash
+		hash := sha256.New()
+		hash.Write(fileBytes)
+		//convert hash to string
+		sha256Hash := fmt.Sprintf("%x", hash.Sum(nil))
+
+		err = orderHistoryDb.UpdateImage(db, newDbFileName, sha256Hash, intId)
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+				"message": "Error while updating DB",
+			})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"img_file": newDbFileName})
 	})
 	log.Printf("Starting OrderHistory-Server at Port: %d", 8081)
 	r.Run(":8081")
