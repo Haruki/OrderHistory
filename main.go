@@ -75,7 +75,7 @@ func main() {
 	})
 	r.POST("/imageUpload", func(c *gin.Context) {
 		id := c.PostForm("itemId")
-		fmt.Println(id)
+		vendor := c.PostForm("vendor")
 		file, err := c.FormFile("file")
 		// The file cannot be received.
 		if err != nil {
@@ -84,7 +84,10 @@ func main() {
 			})
 			return
 		}
-		err = c.SaveUploadedFile(file, "./img/backup/"+file.Filename)
+		//get filename extension
+		ext := filepath.Ext(file.Filename)
+		newFileName := fmt.Sprintf("./img/backup/%s_%s.%s", vendor, id, ext)
+		err = c.SaveUploadedFile(file, newFileName)
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 				"message": "Error while saving file",
