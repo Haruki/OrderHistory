@@ -50,6 +50,16 @@ const App = () => {
       .then((response) => response.json())
       .then((data) => {
         console.log('Success:', data);
+        dataSetter((oldData) => {
+          //loop over data and update the data at id
+          return oldData.map((item) => {
+            if (item.Id === itemId) {
+              return { ...item, ImgFile: data.imgFile };
+            } else {
+              return item;
+            }
+          });
+        });
       })
       .catch((error) => {
         console.error('Error:', error);
@@ -148,7 +158,9 @@ const Picture = ({ ImgFile, handleFile, itemId, vendor }) => {
   };
   const handleChange = (event) => {
     const fileUploaded = event.target.files[0];
-    handleFile(fileUploaded, itemId, vendor);
+    if (event.target.files[0] !== undefined) {
+      handleFile(fileUploaded, itemId, vendor);
+    }
   };
   return (
     <>

@@ -31,7 +31,7 @@ func LoadAllItems(db *sql.DB) (error, []Item) {
 			log.Fatal(err)
 			return err, nil
 		}
-		log.Println(item)
+		//log.Println(item)
 		result = append(result, item)
 	}
 	err = rows.Err()

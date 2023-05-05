@@ -8,6 +8,7 @@ import (
 	"io/fs"
 	"io/ioutil"
 	"log"
+	"mime/multipart"
 	"net/http"
 	"path/filepath"
 	"strconv"
@@ -96,10 +97,17 @@ func main() {
 			})
 			return
 		}
+		sha256Hash, err := hashImage(file)
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+				"message": "Error while hashing file",
+			})
+			return
+		}
 		//get filename extension (returns string including the dot)
 		ext := filepath.Ext(file.Filename)
-		newDbFileName := fmt.Sprintf("./img/%s_%s%s", vendor, id, ext)
-		newFilePathName := fmt.Sprintf("./img/backup/%s_%s%s", vendor, id, ext)
+		newDbFileName := fmt.Sprintf("./img/%s_%s_%s%s", vendor, id, sha256Hash[:5], ext)
+		newFilePathName := fmt.Sprintf("./img/backup/%s_%s_%s%s", vendor, id, sha256Hash[:5], ext)
 		err = c.SaveUploadedFile(file, newFilePathName)
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
@@ -107,21 +115,6 @@ func main() {
 			})
 			return
 		}
-		//read file into []byte
-		realfile, err := file.Open()
-		if err != nil {
-
-		}
-		defer realfile.Close()
-		fileBytes, err := ioutil.ReadAll(realfile)
-		if err != nil {
-
-		}
-		//create sha256 hash
-		hash := sha256.New()
-		hash.Write(fileBytes)
-		//convert hash to string
-		sha256Hash := fmt.Sprintf("%x", hash.Sum(nil))
 
 		err = orderHistoryDb.UpdateImage(db, newDbFileName, sha256Hash, intId)
 		if err != nil {
@@ -131,8 +124,24 @@ func main() {
 			return
 		}
 
-		c.JSON(http.StatusOK, gin.H{"img_file": newDbFileName})
+		c.JSON(http.StatusOK, gin.H{"imgFile": newDbFileName})
 	})
 	log.Printf("Starting OrderHistory-Server at Port: %d", 8081)
 	r.Run(":8081")
+}
+
+func hashImage(file *multipart.FileHeader) (string, error) {
+	realfile, err := file.Open()
+	if err != nil {
+		return "", err
+	}
+	defer realfile.Close()
+	fileBytes, err := ioutil.ReadAll(realfile)
+	if err != nil {
+		return "", err
+	}
+	hash := sha256.New()
+	hash.Write(fileBytes)
+	sha256Hash := fmt.Sprintf("%x", hash.Sum(nil))
+	return sha256Hash, nil
 }
