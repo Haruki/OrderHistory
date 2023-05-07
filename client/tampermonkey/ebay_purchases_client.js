@@ -29,9 +29,7 @@ async function postData(url = '', data = {}) {
 
 (function () {
   'use strict';
-  let orderList = document.querySelectorAll(
-    '#container-1-anchor > section > div.m-container__body > div.m-container__body--items > div > div > div.m-ph-card__content.m-ph-layout-row-hidable > div'
-  );
+  let orderList = document.querySelectorAll('.m-order-card');
   console.log('Items auf Seite: %s', orderList.length);
   for (var order of orderList) {
     console.log('working on order...');
@@ -80,11 +78,13 @@ async function postData(url = '', data = {}) {
       imgUrl = imgElement.getAttribute('data-imgurl');
     }
     //orderDate
-    let dateElement = order.querySelector('div.ph-col__info-orderDate dd');
-    console.log(dateElement.textContent);
+    let dateElement = order.querySelector(
+      'div.primary__item.secondaryMessage span:nth-child(2).primary__item--item-text'
+    );
+    console.log('orderDate: %s', dateElement.textContent);
     //build object for later json marshal
     var orderObj = {
-      artikelnummer: parseInt(artikelnummer.getAttribute('data-listing-id')),
+      //   artikelnummer: parseint(artikelnummer.getattribute('data-listing-id')),
       itemName: itemNameElement.text,
       price: parseInt(price),
       vendor: vendorElement.firstChild.textContent,
