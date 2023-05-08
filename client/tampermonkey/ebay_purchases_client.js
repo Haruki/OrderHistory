@@ -6,7 +6,9 @@
 // @author       You
 // @match        https://www.ebay.de/mye/myebay/*
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
+// @require     file://D:\data\coding\OrderHistory\client\tampermonkey\ebay_purchases_client.js
 // @grant        none
+// @run-at      document-idle
 // ==/UserScript==
 
 var baseUrl = 'http://localhost:8081';
