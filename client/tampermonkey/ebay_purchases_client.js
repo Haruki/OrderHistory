@@ -9,20 +9,37 @@
 // @grant        none
 // ==/UserScript==
 
+var baseUrl = 'http://localhost:8081';
+
 function buildButton(parent, data) {
   parent.innerHTML = '';
   var button = document.createElement('button');
   button.innerHTML = 'Upload data';
+  button.disabled = true;
   button.addEventListener('click', function () {
     alert('did something');
   });
   parent.appendChild(button);
+  //fetch current state from api
+  fetch(
+    baseUrl +
+      '/checkItemExists?' +
+      new URLSearchParams({
+        itemName: data.itemName,
+        purchaseDate: data.purchaseDate,
+        vendor: 'ebay',
+      })
+  ).then((response) => {
+    response.json().then((data) => {
+      console.log(data);
+    });
+  });
 }
 
-async function postData(url = '', data = {}) {
+async function fetchData(url = '', data = {}, method = 'GET') {
   // Default options are marked with *
   const response = await fetch(url, {
-    method: 'POST', // *GET, POST, PUT, DELETE, etc.
+    method: method, // *GET, POST, PUT, DELETE, etc.
     mode: 'cors', // no-cors, *cors, same-origin
     cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
     credentials: 'same-origin', // include, *same-origin, omit
@@ -116,7 +133,7 @@ async function postData(url = '', data = {}) {
       buildButton(parent, orderObj);
       //request to api
 
-      // postData('http://localhost:8081/order/ebay', orderObj)
+      // fetchData(baseUrl + '/order/ebay', orderObj, 'POST')
       //   .then(data => {
       //     console.log(data); // JSON data parsed by `data.json()` call
       //   });

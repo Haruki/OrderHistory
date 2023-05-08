@@ -1,19 +1,12 @@
 package main
 
 import (
-	"crypto/sha256"
 	"database/sql"
 	"embed"
-	"fmt"
 	"io/fs"
-	"io/ioutil"
 	"log"
-	"mime/multipart"
 	"net/http"
 	"path/filepath"
-	"strconv"
-
-	orderHistoryDb "github.com/haruki/OrderHistory/db"
 
 	webui "github.com/haruki/OrderHistory/ui_api"
 
@@ -80,68 +73,11 @@ func main() {
 		}
 	})
 	r.POST("/imageUpload", func(c *gin.Context) {
-		id := c.PostForm("itemId")
-		intId, err := strconv.Atoi(id)
-		if err != nil {
-			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-				"message": "No valid id",
-			})
-			return
-		}
-		vendor := c.PostForm("vendor")
-		file, err := c.FormFile("file")
-		// The file cannot be received.
-		if err != nil {
-			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-				"message": "No file is received",
-			})
-			return
-		}
-		sha256Hash, err := hashImage(file)
-		if err != nil {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-				"message": "Error while hashing file",
-			})
-			return
-		}
-		//get filename extension (returns string including the dot)
-		ext := filepath.Ext(file.Filename)
-		newDbFileName := fmt.Sprintf("./img/%s_%s_%s%s", vendor, id, sha256Hash[:5], ext)
-		newFilePathName := fmt.Sprintf("./img/backup/%s_%s_%s%s", vendor, id, sha256Hash[:5], ext)
-		err = c.SaveUploadedFile(file, newFilePathName)
-		if err != nil {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-				"message": "Error while saving file",
-			})
-			return
-		}
-
-		err = orderHistoryDb.UpdateImage(db, newDbFileName, sha256Hash, intId)
-		if err != nil {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-				"message": "Error while updating DB",
-			})
-			return
-		}
-
-		c.JSON(http.StatusOK, gin.H{"imgFile": newDbFileName})
+		handler.UpdateImage(c)
+	})
+	r.GET("/checkItemExists", func(c *gin.Context) {
+		handler.CheckItemExists(c)
 	})
 	log.Printf("Starting OrderHistory-Server at Port: %d", 8081)
 	r.Run(":8081")
-}
-
-func hashImage(file *multipart.FileHeader) (string, error) {
-	realfile, err := file.Open()
-	if err != nil {
-		return "", err
-	}
-	defer realfile.Close()
-	fileBytes, err := ioutil.ReadAll(realfile)
-	if err != nil {
-		return "", err
-	}
-	hash := sha256.New()
-	hash.Write(fileBytes)
-	sha256Hash := fmt.Sprintf("%x", hash.Sum(nil))
-	return sha256Hash, nil
 }
