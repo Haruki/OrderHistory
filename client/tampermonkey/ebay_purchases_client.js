@@ -48,6 +48,11 @@ async function postData(url = '', data = {}) {
       'div.primary__item.secondaryMessage span:nth-child(2).primary__item--item-text'
     );
     console.log('orderDate: %s', dateElement.textContent);
+    let dateCleaned = dateElement.textContent
+      .replace('Mai', 'May')
+      .replace('Okt', 'Oct')
+      .replace('Dez', 'Dec')
+      .replace('Mär', 'Mar');
     //loop item cards
     let itemCards = order.querySelectorAll(
       '.m-item-card.m-container-item-layout-row__body'
@@ -101,11 +106,7 @@ async function postData(url = '', data = {}) {
         price: parseInt(price),
         vendor: vendorElement.firstChild.textContent,
         imgUrl: imgUrl,
-        purchaseDate: dateElement.textContent
-          .replace('Mai', 'May')
-          .replace('Okt', 'Oct')
-          .replace('Dez', 'Dec')
-          .replace('Mär', 'Mar'),
+        purchaseDate: dateCleaned,
         currency: currency,
       };
       console.log(JSON.stringify(orderObj));
