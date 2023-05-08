@@ -9,6 +9,16 @@
 // @grant        none
 // ==/UserScript==
 
+function buildButton(parent, data) {
+  parent.innerHTML = '';
+  var button = document.createElement('button');
+  button.innerHTML = 'Upload data';
+  button.addEventListener('click', function () {
+    alert('did something');
+  });
+  parent.appendChild(button);
+}
+
 async function postData(url = '', data = {}) {
   // Default options are marked with *
   const response = await fetch(url, {
@@ -45,10 +55,10 @@ async function postData(url = '', data = {}) {
     console.log('Items in order: %s', itemCards.length);
     for (var itemCard of itemCards) {
       //itemName:
-      let itemNameElement = order.querySelector('div a.nav-link');
+      let itemNameElement = itemCard.querySelector('div a.nav-link');
       console.log('itemName: %o', itemNameElement.text);
       //price
-      let itemPrice = order.querySelector(
+      let itemPrice = itemCard.querySelector(
         'div.container-item-col__info-item-info-additionalPrice div span'
       );
       let priceNumber = /^[^\d]*(\d.+)/.exec(itemPrice.innerHTML);
@@ -72,12 +82,12 @@ async function postData(url = '', data = {}) {
         currency = itemCurrency[0].replace('EUR', '€').replace('US', '$');
       }
       //vendor
-      let vendorElement = order.querySelector(
+      let vendorElement = itemCard.querySelector(
         'div.container-item-col__info-item-info-primary.container-item-col__info-item-info-sellerInfo div a span'
       );
       console.log('Haendler: %s', vendorElement.firstChild.textContent);
       //imgUrl
-      let imgElement = order.querySelector('div.m-image img[src][alt]');
+      let imgElement = itemCard.querySelector('div.m-image img[src][alt]');
       console.log('SRC: ' + imgElement.getAttribute('src'));
       let imgUrl = imgElement.getAttribute('src');
       if (imgElement.getAttribute('data-imgurl')) {
@@ -99,6 +109,10 @@ async function postData(url = '', data = {}) {
         currency: currency,
       };
       console.log(JSON.stringify(orderObj));
+
+      //build button
+      var parent = itemCard.querySelector('.fake-menu-button');
+      buildButton(parent, orderObj);
       //request to api
 
       // postData('http://localhost:8081/order/ebay', orderObj)
