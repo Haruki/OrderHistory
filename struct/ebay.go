@@ -9,12 +9,13 @@ type Ebay struct {
 	Currency       *string     `json:"currency,omitempty"`
 	ImgUrl         *string     `json:"imgUrl,omitempty"`
 	ImgFile        *string     `json:"imgFile,omitempty"`
+	ImgHash        *string     `json:"imgHash,omitempty"`
 	EbaySpecial    EbaySpecial `json:"ebaySpecial,omitempty"`
 }
 
 type EbaySpecial struct {
 	//special ebay variables:
-	Vendor        *string `json:"vendor,omitempty"`
+	Haendler      *string `json:"vendor,omitempty"`
 	Artikelnummer *int    `json:"artikelnummer,omitempty"`
 	ImgHash       *string `json:"imgHash,omitempty"`
 }

@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"encoding/json"
 	"log"
-	"strconv"
 
 	structs "github.com/haruki/OrderHistory/struct"
 )
@@ -19,10 +18,7 @@ func StoreEbay(db *sql.DB, order *structs.Ebay) {
 		log.Fatal(err)
 	}
 	defer stmt.Close()
-	var divList []string
-	divList = append(divList, strconv.Itoa(order.Artikelnummer))
-	divList = append(divList, order.Vendor)
-	jsondiv, err := json.Marshal(divList)
+	jsondiv, err := json.Marshal(order.EbaySpecial)
 	div := string(jsondiv)
 	if err != nil {
 		log.Fatal(err)

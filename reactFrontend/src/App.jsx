@@ -166,7 +166,7 @@ const Picture = ({ ImgFile, handleFile, itemId, vendor }) => {
     <>
       <img
         className='picture'
-        src={`${baseurl}/img/backup/${getFileName(ImgFile)}`}
+        src={`${baseurl}/img/${getFileName(ImgFile)}`}
         onClick={handleClick}
       />
       <input

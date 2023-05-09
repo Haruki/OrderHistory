@@ -19,7 +19,7 @@ function buildButton(parent, data) {
   button.addEventListener('click', function () {
     fetchData(baseUrl + '/order/ebay', data, 'POST').then((response) => {
       console.log('order/ebay: %s', response.message); // JSON data parsed by `data.json()` call
-      if (response.message == 'success') {
+      if (response.message == 'Success') {
         button.innerHTML = 'Upload successful';
         button.disabled = true;
         button.style.backgroundColor = 'green';
@@ -142,7 +142,7 @@ async function fetchData(url = '', data = {}, method = 'GET') {
         //   artikelnummer: parseint(artikelnummer.getattribute('data-listing-id')),
         itemName: itemNameElement.text,
         price: parseInt(price),
-        ebaySpecial: { vendor: vendorElement.firstChild.textContent },
+        ebaySpecial: { haendler: vendorElement.firstChild.textContent },
         imgUrl: imgUrl,
         purchaseDate: dateCleaned,
         currency: currency,

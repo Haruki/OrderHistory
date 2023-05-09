@@ -96,8 +96,8 @@ func (h *Handler) UpdateImage(c *gin.Context) {
 	//get filename extension (returns string including the dot)
 	ext := filepath.Ext(file.Filename)
 	newDbFileName := fmt.Sprintf("./img/%s_%s_%s%s", vendor, id, sha256Hash[:5], ext)
-	newFilePathName := fmt.Sprintf("./img/backup/%s_%s_%s%s", vendor, id, sha256Hash[:5], ext)
-	err = c.SaveUploadedFile(file, newFilePathName)
+	// newFilePathName := fmt.Sprintf("./img/backup/%s_%s_%s%s", vendor, id, sha256Hash[:5], ext)
+	err = c.SaveUploadedFile(file, newDbFileName)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 			"message": "Error while saving file",
