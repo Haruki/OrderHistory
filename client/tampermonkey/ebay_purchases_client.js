@@ -142,7 +142,7 @@ async function fetchData(url = '', data = {}, method = 'GET') {
         //   artikelnummer: parseint(artikelnummer.getattribute('data-listing-id')),
         itemName: itemNameElement.text,
         price: parseInt(price),
-        vendor: vendorElement.firstChild.textContent,
+        ebaySpecial: { vendor: vendorElement.firstChild.textContent },
         imgUrl: imgUrl,
         purchaseDate: dateCleaned,
         currency: currency,
