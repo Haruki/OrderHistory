@@ -29,7 +29,7 @@ const App = () => {
           dataSetter(data);
           console.log('done');
           setIsLoading(false);
-        }, 3000);
+        }, 200);
       });
   };
   //fetchData mit useEffect aufrufen
