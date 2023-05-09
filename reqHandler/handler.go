@@ -61,7 +61,11 @@ func (h *Handler) CheckItemExists(c *gin.Context) {
 		})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"exists": exists})
+	if exists {
+		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"exists": exists})
+	} else {
+		c.JSON(http.StatusOK, gin.H{"exists": exists})
+	}
 }
 
 func (h *Handler) UpdateImage(c *gin.Context) {

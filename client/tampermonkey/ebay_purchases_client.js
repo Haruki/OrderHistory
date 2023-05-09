@@ -6,9 +6,7 @@
 // @author       You
 // @match        https://www.ebay.de/mye/myebay/*
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
-// @require     file://D:\data\coding\OrderHistory\client\tampermonkey\ebay_purchases_client.js
 // @grant        none
-// @run-at      document-idle
 // ==/UserScript==
 
 var baseUrl = 'http://localhost:8081';
@@ -19,7 +17,18 @@ function buildButton(parent, data) {
   button.innerHTML = 'Upload data';
   button.disabled = true;
   button.addEventListener('click', function () {
-    alert('did something');
+    fetchData(baseUrl + '/order/ebay', orderObj, 'POST').then((response) => {
+      console.log('order/ebay: %d', response.status); // JSON data parsed by `data.json()` call
+      if (response.status == 200) {
+        button.innerHTML = 'Upload successful';
+        button.disabled = true;
+        button.style.backgroundColor = 'green';
+      } else {
+        button.innerHTML = 'Upload failed';
+        button.disabled = true;
+        button.style.backgroundColor = 'red';
+      }
+    });
   });
   parent.appendChild(button);
   //fetch current state from api
@@ -32,8 +41,18 @@ function buildButton(parent, data) {
         vendor: 'ebay',
       })
   ).then((response) => {
+    console.log(response.status);
     response.json().then((data) => {
       console.log(data);
+      if (response.status == 200) {
+        button.innerHTML = 'Item exists';
+        button.disabled = true;
+        button.style.backgroundColor = 'green';
+      } else {
+        button.innerHTML = 'Upload data';
+        button.disabled = false;
+        button.style.backgroundColor = 'red';
+      }
     });
   });
 }
@@ -133,12 +152,6 @@ async function fetchData(url = '', data = {}, method = 'GET') {
       //build button
       var parent = itemCard.querySelector('.fake-menu-button');
       buildButton(parent, orderObj);
-      //request to api
-
-      // fetchData(baseUrl + '/order/ebay', orderObj, 'POST')
-      //   .then(data => {
-      //     console.log(data); // JSON data parsed by `data.json()` call
-      //   });
     }
   }
 })();
