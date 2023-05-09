@@ -17,9 +17,9 @@ function buildButton(parent, data) {
   button.innerHTML = 'Upload data';
   button.disabled = true;
   button.addEventListener('click', function () {
-    fetchData(baseUrl + '/order/ebay', orderObj, 'POST').then((response) => {
-      console.log('order/ebay: %d', response.status); // JSON data parsed by `data.json()` call
-      if (response.status == 200) {
+    fetchData(baseUrl + '/order/ebay', data, 'POST').then((response) => {
+      console.log('order/ebay: %s', response.message); // JSON data parsed by `data.json()` call
+      if (response.message == 'success') {
         button.innerHTML = 'Upload successful';
         button.disabled = true;
         button.style.backgroundColor = 'green';

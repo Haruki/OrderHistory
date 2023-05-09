@@ -61,7 +61,7 @@ func (h *Handler) CheckItemExists(c *gin.Context) {
 		})
 		return
 	}
-	if exists {
+	if !exists {
 		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"exists": exists})
 	} else {
 		c.JSON(http.StatusOK, gin.H{"exists": exists})
