@@ -15,7 +15,7 @@ type Ebay struct {
 
 type EbaySpecial struct {
 	//special ebay variables:
-	Haendler      *string `json:"vendor,omitempty"`
+	Haendler      *string `json:"haendler,omitempty"`
 	Artikelnummer *int    `json:"artikelnummer,omitempty"`
 	ImgHash       *string `json:"imgHash,omitempty"`
 }
