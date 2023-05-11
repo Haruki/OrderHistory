@@ -78,7 +78,21 @@ const App = () => {
     <div>
       <h1>OrderHistory</h1>
       <Search setter={setsearchterm} val={searchterm} />
+      <YearFilter data={data} />
       <DataList data={dataFiltered} load={isLoading} handleFile={handleFile} />
+    </div>
+  );
+};
+
+const YearFilter = ({ data }) => {
+  const uniqueYears = [
+    ...new Set(data.map((item) => new Date(item.PurchaseDate).getFullYear())),
+  ];
+  return (
+    <div className='yearFilter'>
+      {uniqueYears.map((year) => (
+        <span>{year}</span>
+      ))}
     </div>
   );
 };
