@@ -91,7 +91,7 @@ const YearFilter = ({ data }) => {
   return (
     <div className='yearFilter'>
       {uniqueYears.map((year) => (
-        <span>{year}</span>
+        <span key={year}>{year}</span>
       ))}
     </div>
   );
