@@ -26,7 +26,7 @@ var (
 )
 
 func main() {
-	pathstring, _ := filepath.Abs("/mnt/d/20230101_orderHistory-sqlite.db")
+	pathstring, _ := filepath.Abs("/mnt/d/20230510_orderHistory-sqlite.db")
 	//pathstring, _ := filepath.Abs("d:/20230101_orderHistory-sqlite.db")
 	log.Printf("DB Pfad: %v", pathstring)
 	db, err := sql.Open("sqlite3", pathstring)
