@@ -85,13 +85,17 @@ const App = () => {
 };
 
 const YearFilter = ({ data }) => {
-  const uniqueYears = [
+  var uniqueYears = [
     ...new Set(data.map((item) => new Date(item.PurchaseDate).getFullYear())),
   ];
+  uniqueYears.unshift('All');
   return (
     <div className='yearFilter'>
       {uniqueYears.map((year) => (
-        <span key={year}>{year}</span>
+        <div key={year}>
+          <input type='checkbox' value={year} id={year} />
+          <label htmlFor={year}>{year}</label>
+        </div>
       ))}
     </div>
   );
