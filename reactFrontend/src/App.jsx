@@ -12,6 +12,7 @@ const App = () => {
   const [searchterm, setsearchterm] = useState(
     localStorage.getItem('search') || ''
   );
+  const [yearFilter, setYearFilter] = useState(new Set());
   const [isLoading, setIsLoading] = useState(false);
 
   //Daten aus der DB
@@ -66,25 +67,54 @@ const App = () => {
       });
   };
 
+  //Function to handle YearFilterChanges
+  const handleYearFilterChange = (event) => {
+    console.log(event.target.id);
+    const checkBoxes = document.querySelectorAll(
+      'div.yearFilter input[type=checkbox]'
+    );
+    var currentYearsSet = new Set();
+    for (var checkb of checkBoxes) {
+      if (checkb.checked) {
+        currentYearsSet.add(Number(checkb.id));
+      } else {
+        currentYearsSet.delete(Number(checkb.id));
+      }
+    }
+    console.log('currentYearsSet: %s', new Array(...currentYearsSet).join(' '));
+    setYearFilter((yearFilter) => (yearFilter = currentYearsSet));
+  };
+
   useEffect(() => {
     localStorage.setItem('search', searchterm);
   }, [searchterm]);
 
+  console.log('Filtered Years: %d', yearFilter.size);
   const dataFiltered = data.filter(function (item) {
-    return item.Name.toLowerCase().includes(searchterm.toLowerCase());
+    console.log('currentYearsSet: %s', new Array(...yearFilter).join(' '));
+    console.log(
+      new Date(item.PurchaseDate).getFullYear() +
+        '   ' +
+        yearFilter.has(new Date(item.PurchaseDate).getFullYear())
+    );
+    return (item.Name.toLowerCase().includes(searchterm.toLowerCase()) &&
+      yearFilter.has(new Date(item.PurchaseDate).getFullYear())) ||
+      yearFilter.size == 0
+      ? true
+      : false;
   });
 
   return (
     <div>
       <h1>OrderHistory</h1>
       <Search setter={setsearchterm} val={searchterm} />
-      <YearFilter data={data} />
+      <YearFilter data={data} handleYearFilterChange={handleYearFilterChange} />
       <DataList data={dataFiltered} load={isLoading} handleFile={handleFile} />
     </div>
   );
 };
 
-const YearFilter = ({ data }) => {
+const YearFilter = ({ data, handleYearFilterChange }) => {
   var uniqueYears = [
     ...new Set(data.map((item) => new Date(item.PurchaseDate).getFullYear())),
   ];
@@ -93,7 +123,12 @@ const YearFilter = ({ data }) => {
     <div className='yearFilter'>
       {uniqueYears.map((year) => (
         <div key={year}>
-          <input type='checkbox' value={year} id={year} />
+          <input
+            type='checkbox'
+            value={year}
+            id={year}
+            onClick={handleYearFilterChange}
+          />
           <label htmlFor={year}>{year}</label>
         </div>
       ))}
