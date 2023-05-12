@@ -81,7 +81,6 @@ const App = () => {
         currentYearsSet.delete(Number(checkb.id));
       }
     }
-    console.log('currentYearsSet: %s', new Array(...currentYearsSet).join(' '));
     setYearFilter((yearFilter) => (yearFilter = currentYearsSet));
   };
 
@@ -89,14 +88,7 @@ const App = () => {
     localStorage.setItem('search', searchterm);
   }, [searchterm]);
 
-  console.log('Filtered Years: %d', yearFilter.size);
   const dataFiltered = data.filter(function (item) {
-    console.log('currentYearsSet: %s', new Array(...yearFilter).join(' '));
-    console.log(
-      new Date(item.PurchaseDate).getFullYear() +
-        '   ' +
-        yearFilter.has(new Date(item.PurchaseDate).getFullYear())
-    );
     return (item.Name.toLowerCase().includes(searchterm.toLowerCase()) &&
       yearFilter.has(new Date(item.PurchaseDate).getFullYear())) ||
       yearFilter.size == 0
