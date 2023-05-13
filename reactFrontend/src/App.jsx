@@ -13,6 +13,7 @@ const App = () => {
     localStorage.getItem('search') || ''
   );
   const [yearFilter, setYearFilter] = useState(new Set());
+  const [vendorFilter, setVendorFilter] = useState(new Set());
   const [isLoading, setIsLoading] = useState(false);
 
   //Daten aus der DB
@@ -84,14 +85,32 @@ const App = () => {
     setYearFilter((yearFilter) => (yearFilter = currentYearsSet));
   };
 
+  //Function to handle VendorFilterChanges
+  const handleVendorFilterChange = (event) => {
+    console.log(event.target.id);
+    const checkBoxes = document.querySelectorAll(
+      'div.vendorFilter input[type=checkbox]'
+    );
+    var currentVendorsSet = new Set();
+    for (var checkb of checkBoxes) {
+      if (checkb.checked) {
+        currentVendorsSet.add(checkb.id);
+      } else {
+        currentVendorsSet.delete(checkb.id);
+      }
+    }
+    setVendorFilter((vendorFilter) => (vendorFilter = currentVendorsSet));
+  };
+
   useEffect(() => {
     localStorage.setItem('search', searchterm);
   }, [searchterm]);
 
   const dataFiltered = data.filter(function (item) {
-    return (item.Name.toLowerCase().includes(searchterm.toLowerCase()) &&
-      yearFilter.has(new Date(item.PurchaseDate).getFullYear())) ||
-      yearFilter.size == 0
+    return item.Name.toLowerCase().includes(searchterm.toLowerCase()) &&
+      (yearFilter.has(new Date(item.PurchaseDate).getFullYear()) ||
+        (yearFilter.size == 0 ? true : false)) &&
+      (vendorFilter.has(item.Vendor) || vendorFilter.size == 0)
       ? true
       : false;
   });
@@ -101,16 +120,44 @@ const App = () => {
       <h1>OrderHistory</h1>
       <Search setter={setsearchterm} val={searchterm} />
       <YearFilter data={data} handleYearFilterChange={handleYearFilterChange} />
+      <VendorFilter
+        data={data}
+        handleVendorFilterChange={handleVendorFilterChange}
+      />
       <DataList data={dataFiltered} load={isLoading} handleFile={handleFile} />
     </div>
   );
 };
 
+//----------------------------------------------------------------------
+
+//Component: VendorFilter
+const VendorFilter = ({ data, handleVendorFilterChange }) => {
+  var uniqueVendors = [...new Set(data.map((item) => item.Vendor))];
+  //uniqueVendors.unshift('All');
+  return (
+    <div className='vendorFilter'>
+      {uniqueVendors.map((vendor) => (
+        <div key={vendor}>
+          <input
+            type='checkbox'
+            value={vendor}
+            id={vendor}
+            onClick={handleVendorFilterChange}
+          />
+          <label htmlFor={vendor}>{vendor}</label>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+//Component: YearFilter
 const YearFilter = ({ data, handleYearFilterChange }) => {
   var uniqueYears = [
     ...new Set(data.map((item) => new Date(item.PurchaseDate).getFullYear())),
   ];
-  uniqueYears.unshift('All');
+  //uniqueYears.unshift('All');
   return (
     <div className='yearFilter'>
       {uniqueYears.map((year) => (
