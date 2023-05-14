@@ -7,6 +7,7 @@
 // @match        https://www.ebay.de/mye/myebay/*
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
 // @grant        none
+// @run-at       document-idle
 // ==/UserScript==
 
 var baseUrl = 'http://localhost:8081';
