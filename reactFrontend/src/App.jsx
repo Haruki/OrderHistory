@@ -9,11 +9,29 @@ var baseurl = 'http://localhost:8081';
 
 /*Root Component */
 const App = () => {
+  const getJsonFromLocalStorage = (key) => {
+    const rawResult = localStorage.getItem(key);
+    if (rawResult) {
+      return JSON.parse(rawResult);
+    }
+    return null;
+  };
+
   const [searchterm, setsearchterm] = useState(
     localStorage.getItem('search') || ''
   );
-  const [yearFilter, setYearFilter] = useState(new Set());
-  const [vendorFilter, setVendorFilter] = useState(new Set());
+  const [yearFilter, setYearFilter] = useState(
+    getJsonFromLocalStorage('year') &&
+      getJsonFromLocalStorage('year').length > 2
+      ? new Set(getJsonFromLocalStorage('year'))
+      : new Set()
+  );
+  const [vendorFilter, setVendorFilter] = useState(
+    getJsonFromLocalStorage('vendor') &&
+      getJsonFromLocalStorage('vendor').length > 2
+      ? new Set(getJsonFromLocalStorage('vendor'))
+      : new Set()
+  );
   const [isLoading, setIsLoading] = useState(false);
 
   //Daten aus der DB
@@ -31,7 +49,7 @@ const App = () => {
           dataSetter(data);
           console.log('done');
           setIsLoading(false);
-        }, 200);
+        }, 1000);
       });
   };
   //fetchData mit useEffect aufrufen
@@ -105,6 +123,12 @@ const App = () => {
   useEffect(() => {
     localStorage.setItem('search', searchterm);
   }, [searchterm]);
+  useEffect(() => {
+    localStorage.setItem('year', JSON.stringify([...yearFilter]));
+  }, [yearFilter]);
+  useEffect(() => {
+    localStorage.setItem('vendor', JSON.stringify([...vendorFilter]));
+  }, [vendorFilter]);
 
   const dataFiltered = data.filter(function (item) {
     return item.Name.toLowerCase().includes(searchterm.toLowerCase()) &&
@@ -122,6 +146,7 @@ const App = () => {
       <YearFilter data={data} handleYearFilterChange={handleYearFilterChange} />
       <VendorFilter
         data={data}
+        vendorFilter={vendorFilter}
         handleVendorFilterChange={handleVendorFilterChange}
       />
       <DataList data={dataFiltered} load={isLoading} handleFile={handleFile} />
@@ -132,7 +157,7 @@ const App = () => {
 //----------------------------------------------------------------------
 
 //Component: VendorFilter
-const VendorFilter = ({ data, handleVendorFilterChange }) => {
+const VendorFilter = ({ data, vendorFilter, handleVendorFilterChange }) => {
   var uniqueVendors = [...new Set(data.map((item) => item.Vendor))];
   //uniqueVendors.unshift('All');
   return (
@@ -144,6 +169,7 @@ const VendorFilter = ({ data, handleVendorFilterChange }) => {
             value={vendor}
             id={vendor}
             onClick={handleVendorFilterChange}
+            defaultChecked={vendorFilter.has(vendor)}
           />
           <label htmlFor={vendor}>{vendor}</label>
         </div>
