@@ -11,27 +11,37 @@ var baseurl = 'http://localhost:8081';
 const App = () => {
   const getJsonFromLocalStorage = (key) => {
     const rawResult = localStorage.getItem(key);
-    if (rawResult) {
+    // console.log('from localStorage: %s -> %s', key, rawResult);
+    if (rawResult && rawResult.length > 2) {
+      // console.log('returning JSON: ' + rawResult);
       return JSON.parse(rawResult);
     }
+    // console.log('returning null');
     return null;
+  };
+
+  const makeSet = (key) => {
+    const json = getJsonFromLocalStorage(key);
+    // console.log('makeSet: %s -> %s', key, json);
+    // console.log('json null: ' + (json == null));
+    // console.log('json undefined: ' + (json === undefined));
+    if (json != null && json !== undefined) {
+      // console.log('json length: ' + json.length);
+    }
+    if (json != null && json !== undefined && json.length >= 1) {
+      // console.log('returning Set: ' + json);
+      return new Set(json);
+    } else {
+      // console.log('returning empty Set');
+      return new Set();
+    }
   };
 
   const [searchterm, setsearchterm] = useState(
     localStorage.getItem('search') || ''
   );
-  const [yearFilter, setYearFilter] = useState(
-    getJsonFromLocalStorage('year') &&
-      getJsonFromLocalStorage('year').length > 2
-      ? new Set(getJsonFromLocalStorage('year'))
-      : new Set()
-  );
-  const [vendorFilter, setVendorFilter] = useState(
-    getJsonFromLocalStorage('vendor') &&
-      getJsonFromLocalStorage('vendor').length > 2
-      ? new Set(getJsonFromLocalStorage('vendor'))
-      : new Set()
-  );
+  const [yearFilter, setYearFilter] = useState(makeSet('year'));
+  const [vendorFilter, setVendorFilter] = useState(makeSet('vendor'));
   const [isLoading, setIsLoading] = useState(false);
 
   //Daten aus der DB
@@ -88,7 +98,7 @@ const App = () => {
 
   //Function to handle YearFilterChanges
   const handleYearFilterChange = (event) => {
-    console.log(event.target.id);
+    // console.log(event.target.id);
     const checkBoxes = document.querySelectorAll(
       'div.yearFilter input[type=checkbox]'
     );
@@ -105,7 +115,7 @@ const App = () => {
 
   //Function to handle VendorFilterChanges
   const handleVendorFilterChange = (event) => {
-    console.log(event.target.id);
+    // console.log(event.target.id);
     const checkBoxes = document.querySelectorAll(
       'div.vendorFilter input[type=checkbox]'
     );
@@ -143,7 +153,11 @@ const App = () => {
     <div>
       <h1>OrderHistory</h1>
       <Search setter={setsearchterm} val={searchterm} />
-      <YearFilter data={data} handleYearFilterChange={handleYearFilterChange} />
+      <YearFilter
+        data={data}
+        yearFilter={yearFilter}
+        handleYearFilterChange={handleYearFilterChange}
+      />
       <VendorFilter
         data={data}
         vendorFilter={vendorFilter}
@@ -168,8 +182,8 @@ const VendorFilter = ({ data, vendorFilter, handleVendorFilterChange }) => {
             type='checkbox'
             value={vendor}
             id={vendor}
-            onClick={handleVendorFilterChange}
-            defaultChecked={vendorFilter.has(vendor)}
+            onChange={handleVendorFilterChange}
+            checked={vendorFilter.has(vendor)}
           />
           <label htmlFor={vendor}>{vendor}</label>
         </div>
@@ -179,7 +193,7 @@ const VendorFilter = ({ data, vendorFilter, handleVendorFilterChange }) => {
 };
 
 //Component: YearFilter
-const YearFilter = ({ data, handleYearFilterChange }) => {
+const YearFilter = ({ data, yearFilter, handleYearFilterChange }) => {
   var uniqueYears = [
     ...new Set(data.map((item) => new Date(item.PurchaseDate).getFullYear())),
   ];
@@ -192,7 +206,8 @@ const YearFilter = ({ data, handleYearFilterChange }) => {
             type='checkbox'
             value={year}
             id={year}
-            onClick={handleYearFilterChange}
+            onChange={handleYearFilterChange}
+            checked={yearFilter.has(year)}
           />
           <label htmlFor={year}>{year}</label>
         </div>
