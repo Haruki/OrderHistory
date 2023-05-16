@@ -19,7 +19,7 @@
     rgba(31, 31, 31, 1) 100%
   );
   display: grid;
-  grid-template-columns: 6rem 7rem 7rem 1rem max-content;
+  grid-template-columns: 6rem 7rem 7rem 1rem auto;
   grid-template-rows: auto auto auto;
   grid-template-areas:
     'picture artikel artikel artikel artikel'
@@ -53,6 +53,7 @@
 
 .artikel {
   grid-area: artikel;
+  overflow: hidden;
 }
 
 .purchaseDate {
