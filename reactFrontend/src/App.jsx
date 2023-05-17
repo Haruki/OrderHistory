@@ -102,6 +102,12 @@ const App = () => {
     const checkBoxes = document.querySelectorAll(
       'div.yearFilter input[type=checkbox]'
     );
+    if (event.target.id == 0) {
+      let allState = event.target.checked;
+      for (var checkb of checkBoxes) {
+        checkb.checked = allState;
+      }
+    }
     var currentYearsSet = new Set();
     for (var checkb of checkBoxes) {
       if (checkb.checked) {
@@ -119,6 +125,12 @@ const App = () => {
     const checkBoxes = document.querySelectorAll(
       'div.vendorFilter input[type=checkbox]'
     );
+    if (event.target.id == 'All') {
+      let allState = event.target.checked;
+      for (var checkb of checkBoxes) {
+        checkb.checked = allState;
+      }
+    }
     var currentVendorsSet = new Set();
     for (var checkb of checkBoxes) {
       if (checkb.checked) {
@@ -173,7 +185,7 @@ const App = () => {
 //Component: VendorFilter
 const VendorFilter = ({ data, vendorFilter, handleVendorFilterChange }) => {
   var uniqueVendors = [...new Set(data.map((item) => item.Vendor))];
-  //uniqueVendors.unshift('All');
+  uniqueVendors.unshift('All');
   return (
     <div className='vendorFilter'>
       {uniqueVendors.map((vendor) => (
@@ -197,19 +209,19 @@ const YearFilter = ({ data, yearFilter, handleYearFilterChange }) => {
   var uniqueYears = [
     ...new Set(data.map((item) => new Date(item.PurchaseDate).getFullYear())),
   ];
-  //uniqueYears.unshift('All');
+  uniqueYears.unshift(0);
   return (
     <div className='yearFilter'>
       {uniqueYears.map((year) => (
         <div key={year}>
           <input
             type='checkbox'
-            value={year}
+            value={year === 0 ? 'All' : year}
             id={year}
             onChange={handleYearFilterChange}
             checked={yearFilter.has(year)}
           />
-          <label htmlFor={year}>{year}</label>
+          <label htmlFor={year}>{year === 0 ? 'All' : year}</label>
         </div>
       ))}
     </div>
