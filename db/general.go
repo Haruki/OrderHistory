@@ -55,3 +55,26 @@ func convertDate(date string, vendor string) string {
 	}
 	return result
 }
+
+func InsertNewItemManual(db *sql.DB, itemName string, date string, price int, currency string, vendor string, div string) error {
+	date = convertDate(date, vendor)
+	tx, err := db.Begin()
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
+	stmt, err := tx.Prepare("insert into t_purchase(item_name, purchase_date, price, currency, vendor_platform) values(?,?,?,?,?)")
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
+	defer stmt.Close()
+	//set insert query parameters and execute
+	_, err = stmt.Exec(itemName, date, price, currency, vendor)
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
+	tx.Commit()
+	return nil
+}

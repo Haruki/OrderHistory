@@ -129,3 +129,27 @@ func hashImage(file *multipart.FileHeader) (string, error) {
 	sha256Hash := fmt.Sprintf("%x", hash.Sum(nil))
 	return sha256Hash, nil
 }
+
+func (h *Handler) AddNewItemManual(c *gin.Context) {
+	itemName := c.PostForm("itemName")
+	date := c.PostForm("date")
+	price := c.PostForm("price")
+	intPrice, err := strconv.Atoi(price)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"message": "No valid price",
+		})
+		return
+	}
+	currency := c.PostForm("currency")
+	vendor := c.PostForm("vendor")
+	div := c.PostForm("div")
+	err = orderHistoryDb.InsertNewItemManual(h.db, itemName, date, intPrice, currency, vendor, div)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+			"message": "Error while inserting into DB",
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "Item added"})
+}

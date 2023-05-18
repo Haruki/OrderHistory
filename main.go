@@ -45,11 +45,6 @@ func main() {
 	//WebUI:
 	dist, _ := fs.Sub(webuifs, "reactFrontend/dist")
 	r.StaticFS("/webui", http.FS(dist)) //package.json -> "build": "vite build --base=/webui/"
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "OK",
-		})
-	})
 	r.GET("/allitems", func(c *gin.Context) {
 		err, items := webui.LoadAllItems(db)
 		if err != nil {
@@ -77,6 +72,9 @@ func main() {
 	})
 	r.GET("/checkItemExists", func(c *gin.Context) {
 		handler.CheckItemExists(c)
+	})
+	r.POST("/newItemManual", func(c *gin.Context) {
+		handler.AddNewItemManual(c)
 	})
 	log.Printf("Starting OrderHistory-Server at Port: %d", 8081)
 	r.Run(":8081")
