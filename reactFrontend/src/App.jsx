@@ -182,6 +182,120 @@ const App = () => {
 
 //----------------------------------------------------------------------
 
+//Compoent: Overlay Form for adding new Items
+const OverlayForm = ({ show, handleClose, handleAdd }) => {
+  const [name, setName] = useState('');
+  const [vendor, setVendor] = useState('');
+  const [purchaseDate, setPurchaseDate] = useState('');
+  const [price, setPrice] = useState('');
+  const [currency, setCurrency] = useState('');
+  const [div, setDiv] = useState('');
+  const [imgFile, setImgFile] = useState('');
+  const [imgFilePreview, setImgFilePreview] = useState('');
+  const [imgFileError, setImgFileError] = useState(false);
+
+  const handleNameChange = (event) => {
+    setName(event.target.value);
+  };
+  const handleVendorChange = (event) => {
+    setVendor(event.target.value);
+  };
+  const handlePurchaseDateChange = (event) => {
+    setPurchaseDate(event.target.value);
+  };
+  const handlePriceChange = (event) => {
+    setPrice(event.target.value);
+  };
+  const handleCurrencyChange = (event) => {
+    setCurrency(event.target.value);
+  };
+  const handleDivChange = (event) => {
+    setDiv(event.target.value);
+  };
+  const handleImgFileChange = (event) => {
+    if (event.target.files.length) {
+      setImgFile(event.target.files[0]);
+      setImgFilePreview(URL.createObjectURL(event.target.files[0]));
+    }
+  };
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    if (imgFile) {
+      const formData = new FormData();
+      formData.append('file', imgFile);
+      formData.append('name', name);
+      formData.append('vendor', vendor);
+      formData.append('purchaseDate', purchaseDate);
+      formData.append('price', price);
+      formData.append('currency', currency);
+      formData.append('div', div);
+      fetch(baseurl + '/additem', {
+        method: 'POST',
+        body: formData,
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log('Success:', data);
+          handleAdd(data);
+          handleClose();
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+        });
+    } else {
+      setImgFileError(true);
+    }
+  };
+
+  return (
+    <div className={show ? 'overlayForm' : 'overlayForm hidden'}>
+      <form onSubmit={handleSubmit}>
+        <label htmlFor='name'>Name: </label>
+        <input type='text' id='name' value={name} onChange={handleNameChange} />
+        <label htmlFor='vendor'>Vendor: </label>
+        <input
+          type='text'
+          id='vendor'
+          value={vendor}
+          onChange={handleVendorChange}
+        />
+        <label htmlFor='purchaseDate'>PurchaseDate: </label>
+        <input
+          type='date'
+          id='purchaseDate'
+          value={purchaseDate}
+          onChange={handlePurchaseDateChange}
+        />
+        <label htmlFor='price'>Price: </label>
+        <input
+          type='number'
+          id='price'
+          value={price}
+          onChange={handlePriceChange}
+        />
+        <label htmlFor='currency'>Currency: </label>
+        <input
+          type='text'
+          id='currency'
+          value={currency}
+          onChange={handleCurrencyChange}
+        />
+        <label htmlFor='div'>Div: </label>
+        <input type='text' id='div' value={div} onChange={handleDivChange} />
+        <label htmlFor='imgFile'>Image: </label>
+        <input type='file' id='imgFile' onChange={handleImgFileChange} />
+        {imgFileError && (
+          <div className='error'>Please select an image file</div>
+        )}
+        {imgFilePreview && (
+          <img className='preview' src={imgFilePreview} alt='preview' />
+        )}
+        <button type='submit'>Add</button>
+      </form>
+    </div>
+  );
+};
+
 //Component: VendorFilter
 const VendorFilter = ({ data, vendorFilter, handleVendorFilterChange }) => {
   var uniqueVendors = [...new Set(data.map((item) => item.Vendor))];
