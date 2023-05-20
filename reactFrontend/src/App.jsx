@@ -184,40 +184,6 @@ const App = () => {
 
 //Compoent: Overlay Form for adding new Items
 const OverlayForm = ({ show, handleClose, handleAdd }) => {
-  const [name, setName] = useState('');
-  const [vendor, setVendor] = useState('');
-  const [purchaseDate, setPurchaseDate] = useState('');
-  const [price, setPrice] = useState('');
-  const [currency, setCurrency] = useState('');
-  const [div, setDiv] = useState('');
-  const [imgFile, setImgFile] = useState('');
-  const [imgFilePreview, setImgFilePreview] = useState('');
-  const [imgFileError, setImgFileError] = useState(false);
-
-  const handleNameChange = (event) => {
-    setName(event.target.value);
-  };
-  const handleVendorChange = (event) => {
-    setVendor(event.target.value);
-  };
-  const handlePurchaseDateChange = (event) => {
-    setPurchaseDate(event.target.value);
-  };
-  const handlePriceChange = (event) => {
-    setPrice(event.target.value);
-  };
-  const handleCurrencyChange = (event) => {
-    setCurrency(event.target.value);
-  };
-  const handleDivChange = (event) => {
-    setDiv(event.target.value);
-  };
-  const handleImgFileChange = (event) => {
-    if (event.target.files.length) {
-      setImgFile(event.target.files[0]);
-      setImgFilePreview(URL.createObjectURL(event.target.files[0]));
-    }
-  };
   const handleSubmit = (event) => {
     event.preventDefault();
     if (imgFile) {
@@ -251,7 +217,7 @@ const OverlayForm = ({ show, handleClose, handleAdd }) => {
     <div className={show ? 'overlayForm' : 'overlayForm hidden'}>
       <form onSubmit={handleSubmit}>
         <label htmlFor='name'>Name: </label>
-        <input type='text' id='name' value={name} onChange={handleNameChange} />
+        <input type='text' id='name' onChange={handleNameChange} />
         <label htmlFor='vendor'>Vendor: </label>
         <input
           type='text'
