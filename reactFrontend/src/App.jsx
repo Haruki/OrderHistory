@@ -43,6 +43,12 @@ const App = () => {
   const [yearFilter, setYearFilter] = useState(makeSet('year'));
   const [vendorFilter, setVendorFilter] = useState(makeSet('vendor'));
   const [isLoading, setIsLoading] = useState(false);
+  const [showForm, setShowForm] = useState(true);
+  const modalAddItemDialog = useRef();
+
+  const displayAddItemForm = () => {
+    modalAddItemDialog.current.showModal();
+  };
 
   //Daten aus der DB
   const [data, dataSetter] = useState([]);
@@ -164,6 +170,8 @@ const App = () => {
   return (
     <div>
       <h1>OrderHistory</h1>
+      <button onClick={displayAddItemForm}>Add Item</button>
+      <OverlayForm show={showForm} modalDialog={modalAddItemDialog} />
       <Search setter={setsearchterm} val={searchterm} />
       <YearFilter
         data={data}
@@ -180,85 +188,50 @@ const App = () => {
   );
 };
 
+const AddItemButton = ({ handleShow }) => (
+  <button onClick={handleShow}>Add Item</button>
+);
+
 //----------------------------------------------------------------------
 
 //Compoent: Overlay Form for adding new Items
-const OverlayForm = ({ show, handleClose, handleAdd }) => {
+const OverlayForm = ({ show, modalDialog }) => {
+  const handleClose = () => {
+    modalDialog.current.close();
+  };
+
   const handleSubmit = (event) => {
     event.preventDefault();
-    if (imgFile) {
-      const formData = new FormData();
-      formData.append('file', imgFile);
-      formData.append('name', name);
-      formData.append('vendor', vendor);
-      formData.append('purchaseDate', purchaseDate);
-      formData.append('price', price);
-      formData.append('currency', currency);
-      formData.append('div', div);
-      fetch(baseurl + '/additem', {
-        method: 'POST',
-        body: formData,
+    const formData = new FormData();
+    formData.append('file', imgFile);
+    formData.append('name', name);
+    formData.append('vendor', vendor);
+    formData.append('purchaseDate', purchaseDate);
+    formData.append('price', price);
+    formData.append('currency', currency);
+    formData.append('div', div);
+    fetch(baseurl + '/additem', {
+      method: 'POST',
+      body: formData,
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log('Success:', data);
+        handleAdd(data);
+        handleClose();
       })
-        .then((response) => response.json())
-        .then((data) => {
-          console.log('Success:', data);
-          handleAdd(data);
-          handleClose();
-        })
-        .catch((error) => {
-          console.error('Error:', error);
-        });
-    } else {
-      setImgFileError(true);
-    }
+      .catch((error) => {
+        console.error('Error:', error);
+      });
   };
 
   return (
-    <div className={show ? 'overlayForm' : 'overlayForm hidden'}>
-      <form onSubmit={handleSubmit}>
-        <label htmlFor='name'>Name: </label>
-        <input type='text' id='name' onChange={handleNameChange} />
-        <label htmlFor='vendor'>Vendor: </label>
-        <input
-          type='text'
-          id='vendor'
-          value={vendor}
-          onChange={handleVendorChange}
-        />
-        <label htmlFor='purchaseDate'>PurchaseDate: </label>
-        <input
-          type='date'
-          id='purchaseDate'
-          value={purchaseDate}
-          onChange={handlePurchaseDateChange}
-        />
-        <label htmlFor='price'>Price: </label>
-        <input
-          type='number'
-          id='price'
-          value={price}
-          onChange={handlePriceChange}
-        />
-        <label htmlFor='currency'>Currency: </label>
-        <input
-          type='text'
-          id='currency'
-          value={currency}
-          onChange={handleCurrencyChange}
-        />
-        <label htmlFor='div'>Div: </label>
-        <input type='text' id='div' value={div} onChange={handleDivChange} />
-        <label htmlFor='imgFile'>Image: </label>
-        <input type='file' id='imgFile' onChange={handleImgFileChange} />
-        {imgFileError && (
-          <div className='error'>Please select an image file</div>
-        )}
-        {imgFilePreview && (
-          <img className='preview' src={imgFilePreview} alt='preview' />
-        )}
-        <button type='submit'>Add</button>
-      </form>
-    </div>
+    <dialog data-modal className='modal' ref={modalDialog}>
+      <div>hallo</div>
+      <button data-close-modal onClick={handleClose}>
+        Close
+      </button>
+    </dialog>
   );
 };
 
