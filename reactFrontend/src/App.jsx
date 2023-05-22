@@ -226,9 +226,17 @@ const OverlayForm = ({ show, modalDialog }) => {
   };
 
   return (
-    <dialog data-modal className='modal' ref={modalDialog}>
-      <div>hallo</div>
-      <button data-close-modal onClick={handleClose}>
+    <dialog data-modal className='modal itemDialog' ref={modalDialog}>
+      <div className='header'>hallo</div>
+      <label className='itemLabel' htmlFor='itemName'>
+        Name
+      </label>
+      <input className='item' type='text' name='itemName' id='name' />
+      <label className='priceLabel' htmlFor='price'>
+        price
+      </label>
+      <input className='price' type='text' name='price' id='price' />
+      <button className='buttonsB' data-close-modal onClick={handleClose}>
         Close
       </button>
     </dialog>

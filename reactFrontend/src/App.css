@@ -94,3 +94,40 @@
   display: flex;
   gap: 1rem;
 }
+
+.itemDialog {
+  display: grid;
+  grid-template-columns: 1fr 4fr;
+  /* grid-template-rows: auto auto auto; */
+  grid-template-areas:
+    'header header'
+    'itemLabel item'
+    'priceLabel price'
+    'platformLabel platform'
+    'purchaseDateLabel purchaseDate'
+    'currencyLabel currency'
+    'divLabel div'
+    '... buttonsB';
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.itemLabel {
+  grid-area: itemLabel;
+}
+
+.item {
+  grid-area: item;
+}
+
+.priceLabel {
+  grid-area: priceLabel;
+}
+
+.price {
+  grid-area: price;
+}
+
+.header {
+  grid-area: header;
+}
