@@ -43,7 +43,7 @@ const App = () => {
   const [yearFilter, setYearFilter] = useState(makeSet('year'));
   const [vendorFilter, setVendorFilter] = useState(makeSet('vendor'));
   const [isLoading, setIsLoading] = useState(false);
-  const [showForm, setShowForm] = useState(true);
+  const [showForm, setShowForm] = useState(false);
   const modalAddItemDialog = useRef();
 
   const displayAddItemForm = () => {
@@ -226,19 +226,56 @@ const OverlayForm = ({ show, modalDialog }) => {
   };
 
   return (
-    <dialog data-modal className='modal itemDialog' ref={modalDialog}>
-      <div className='header'>hallo</div>
-      <label className='itemLabel' htmlFor='itemName'>
-        Name
-      </label>
-      <input className='item' type='text' name='itemName' id='name' />
-      <label className='priceLabel' htmlFor='price'>
-        price
-      </label>
-      <input className='price' type='text' name='price' id='price' />
-      <button className='buttonsB' data-close-modal onClick={handleClose}>
-        Close
-      </button>
+    <dialog data-modal className='modal dialog' ref={modalDialog}>
+      <div className='itemDialog'>
+        <h2 className='form-header'>Add new Item</h2>
+        <label className='form-itemLabel' htmlFor='itemName'>
+          Name
+        </label>
+        <input className='form-item' type='text' name='itemName' id='name' />
+
+        <label className='form-priceLabel' htmlFor='price'>
+          Price
+        </label>
+        <input className='form-price' type='text' name='price' id='price' />
+
+        <label className='form-dateLabel' htmlFor='date'>
+          Date
+        </label>
+        <input className='form-date' type='text' name='date' id='date' />
+
+        <label className='form-platformLabel' htmlFor='platform'>
+          Platform
+        </label>
+        <input
+          className='form-platform'
+          type='platform'
+          name='platform'
+          id='platform'
+        />
+
+        <label className='form-currencyLabel' htmlFor='currency'>
+          Currency
+        </label>
+        <input
+          className='form-currency'
+          type='text'
+          name='currency'
+          id='currency'
+        />
+
+        <label className='form-divLabel' htmlFor='div'>
+          Div
+        </label>
+        <input className='form-div' type='text' name='div' id='div' />
+
+        <span className='form-button'>
+          <button data-close-modal onClick={handleClose}>
+            Close
+          </button>
+          <button onClick={handleSubmit}>Submit</button>
+        </span>
+      </div>
     </dialog>
   );
 };

@@ -95,6 +95,21 @@
   gap: 1rem;
 }
 
+/*************** FORM DIALOG ****************/
+
+.dialog {
+  padding: 1rem;
+  color: rgb(233, 233, 233);
+  background: linear-gradient(
+    90deg,
+    rgba(60, 60, 60, 1) 0%,
+    rgba(77, 77, 77, 1) 0%,
+    rgba(31, 31, 31, 1) 100%
+  );
+  border-radius: 1rem;
+  border: 1px solid #1a1a1a;
+}
+
 .itemDialog {
   display: grid;
   grid-template-columns: 1fr 4fr;
@@ -109,25 +124,69 @@
     'divLabel div'
     '... buttonsB';
   gap: 1rem;
-  padding: 1rem;
 }
 
-.itemLabel {
+.dialog::backdrop {
+  background-color: rgba(59, 59, 59, 0.9);
+}
+
+.form-itemLabel {
   grid-area: itemLabel;
 }
 
-.item {
+.form-item {
   grid-area: item;
 }
 
-.priceLabel {
+.form-priceLabel {
   grid-area: priceLabel;
 }
 
-.price {
+.form-price {
   grid-area: price;
 }
 
-.header {
+.form-header {
   grid-area: header;
 }
+
+.form-button {
+  grid-area: buttonsB;
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+}
+
+.form-date {
+  grid-area: purchaseDate;
+}
+
+.form-dateLabel {
+  grid-area: purchaseDateLabel;
+}
+
+.form-platform {
+  grid-area: platform;
+}
+
+.form-platformLabel {
+  grid-area: platformLabel;
+}
+
+.form-currency {
+  grid-area: currency;
+}
+
+.form-currencyLabel {
+  grid-area: currencyLabel;
+}
+
+.form-div {
+  grid-area: div;
+}
+
+.form-divLabel {
+  grid-area: divLabel;
+}
+
+/*************** FORM DIALOG ****************/
