@@ -202,15 +202,9 @@ const OverlayForm = ({ show, modalDialog }) => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    const formData = new FormData();
-    formData.append('file', imgFile);
-    formData.append('name', name);
-    formData.append('vendor', vendor);
-    formData.append('purchaseDate', purchaseDate);
-    formData.append('price', price);
-    formData.append('currency', currency);
-    formData.append('div', div);
-    fetch(baseurl + '/additem', {
+    const form = event.target;
+    const formData = new FormData(form);
+    fetch(baseurl + '/newItemManual', {
       method: 'POST',
       body: formData,
     })
