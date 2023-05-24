@@ -121,6 +121,7 @@
     'platformLabel platform'
     'purchaseDateLabel purchaseDate'
     'currencyLabel currency'
+    'imgUrlLabel imgUrl'
     'divLabel div'
     '... buttonsB';
   gap: 1rem;
@@ -189,4 +190,11 @@
   grid-area: divLabel;
 }
 
+.form-imgUrl {
+  grid-area: imgUrl;
+}
+
+.form-imgUrlLabel {
+  grid-area: imgUrlLabel;
+}
 /*************** FORM DIALOG ****************/

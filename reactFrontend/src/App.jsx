@@ -264,6 +264,11 @@ const OverlayForm = ({ show, modalDialog }) => {
           id='currency'
         />
 
+        <label className='form-imgUrlLabel' htmlFor='imgUrl'>
+          Image Url
+        </label>
+        <input className='form-imgUrl' type='text' name='imgUrl' id='imgUrl' />
+
         <label className='form-divLabel' htmlFor='div'>
           Div
         </label>
