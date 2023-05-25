@@ -142,7 +142,7 @@ func (h *Handler) AddNewItemManual(c *gin.Context) {
 		return
 	}
 	currency := c.PostForm("currency")
-	vendor := c.PostForm("vendor")
+	vendor := c.PostForm("platform")
 	div := c.PostForm("div")
 	err = orderHistoryDb.InsertNewItemManual(h.db, itemName, date, intPrice, currency, vendor, div)
 	if err != nil {

@@ -196,7 +196,8 @@ const AddItemButton = ({ handleShow }) => (
 
 //Compoent: Overlay Form for adding new Items
 const OverlayForm = ({ show, modalDialog }) => {
-  const handleClose = () => {
+  const handleClose = (event) => {
+    event.preventDefault();
     modalDialog.current.close();
   };
 
@@ -210,7 +211,7 @@ const OverlayForm = ({ show, modalDialog }) => {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log('Success:', data);
+        console.log('Returnmessage:', data);
         handleAdd(data);
         handleClose();
       })
@@ -221,7 +222,7 @@ const OverlayForm = ({ show, modalDialog }) => {
 
   return (
     <dialog data-modal className='modal dialog' ref={modalDialog}>
-      <div className='itemDialog'>
+      <form method='post' onSubmit={handleSubmit} className='itemDialog'>
         <h2 className='form-header'>Add new Item</h2>
         <label className='form-itemLabel' htmlFor='itemName'>
           Name
@@ -272,9 +273,9 @@ const OverlayForm = ({ show, modalDialog }) => {
           <button data-close-modal onClick={handleClose}>
             Close
           </button>
-          <button onClick={handleSubmit}>Submit</button>
+          <button type='submit'>Submit</button>
         </span>
-      </div>
+      </form>
     </dialog>
   );
 };
