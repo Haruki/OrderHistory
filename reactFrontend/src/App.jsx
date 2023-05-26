@@ -329,7 +329,7 @@ const YearFilter = ({ data, yearFilter, handleYearFilterChange }) => {
 const DataList = ({ data, load, handleFile }) => {
   return (
     <div>
-      <h2>Orders:</h2>
+      <h2>{data.length} Orders:</h2>
       {load ? (
         <LoadingHint />
       ) : (
@@ -409,7 +409,8 @@ const Picture = ({ ImgFile, handleFile, itemId, vendor }) => {
     <>
       <img
         className='picture'
-        src={`${baseurl}/img/${getFileName(ImgFile)}`}
+        // src={`${baseurl}/img/${getFileName(ImgFile)}`}
+        src={`${baseurl}/img/${ImgFile}`}
         onClick={handleClick}
       />
       <input
