@@ -35,7 +35,7 @@ func downloadFile(URL, fileName string) (string, string, error) {
 	defer response.Body.Close()
 
 	if response.StatusCode != 200 {
-		return "", "", errors.New("Received non 200 response code")
+		return "", "", errors.New("received non 200 response code")
 	}
 	b, err := io.ReadAll(response.Body)
 	if err != nil {
@@ -46,6 +46,9 @@ func downloadFile(URL, fileName string) (string, string, error) {
 	fileName = fileName + "_" + hsha2[0:5] + ".jpg"
 	if hsha2 != "a567462f4edd496bdf5cd00da5bbde64131c283e3cf396bfd58c0fac26b13d9a" && hsha2 != "c041d4387a7d60b3d31d7f9c39e8ac531d8a342e24e695c739718a388f914f93" {
 		err = os.WriteFile(fileName, b, 0777)
+		if err != nil {
+			return "", "", err
+		}
 	}
 	return fileName, hsha2, nil
 }
@@ -134,6 +137,15 @@ func (h *Handler) AddNewItemManual(c *gin.Context) {
 	itemName := c.PostForm("itemName")
 	date := c.PostForm("date")
 	price := c.PostForm("price")
+	imgUrl := c.PostForm("imgUrl")
+	vendor := c.PostForm("platform")
+	imgFileName, sha256Hash, err := downloadFile(imgUrl, vendor)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+			"message": "Error while downloading file",
+		})
+		return
+	}
 	intPrice, err := strconv.Atoi(price)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
@@ -142,9 +154,8 @@ func (h *Handler) AddNewItemManual(c *gin.Context) {
 		return
 	}
 	currency := c.PostForm("currency")
-	vendor := c.PostForm("platform")
 	div := c.PostForm("div")
-	err = orderHistoryDb.InsertNewItemManual(h.db, itemName, date, intPrice, currency, vendor, div)
+	err = orderHistoryDb.InsertNewItemManual(h.db, itemName, date, intPrice, currency, vendor, div, imgFileName, sha256Hash)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 			"message": "Error while inserting into DB",

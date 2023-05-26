@@ -16,8 +16,8 @@ func (h *Handler) Aliexpress(c *gin.Context) {
 	var aliOrder structs.Aliexpress
 	err := c.ShouldBindJSON(&aliOrder)
 	if err == nil {
-		log.Println(fmt.Sprintf("itemName: %v", aliOrder.ItemName))
-		log.Println(fmt.Sprintf("ImgUrl: %v", aliOrder.ImgUrl))
+		log.Printf("itemName: %v\n", aliOrder.ItemName)
+		log.Printf("ImgUrl: %v\n", aliOrder.ImgUrl)
 		fixedDate, err := time.Parse("02. Jan 2006", aliOrder.PurchaseDate)
 		aliOrder.PurchaseDate = fixedDate.Format("2006-01-02")
 		if err != nil {
@@ -30,7 +30,8 @@ func (h *Handler) Aliexpress(c *gin.Context) {
 			log.Println("Fehler: URL kann nicht dekodiert werden!" + err.Error())
 		}
 		log.Println("unescaped: " + imgUrl)
-		aliOrder.ImgFile, hash, err = downloadFile(imgUrl, fmt.Sprintf("%s%s", "./img/", aliOrder.ImgFile))
+		//aliOrder.ImgFile, hash, err = downloadFile(imgUrl, fmt.Sprintf("%s%s", "./img/", aliOrder.ImgFile))
+		aliOrder.ImgFile, hash, err = downloadFile(imgUrl, aliOrder.ImgFile)
 		if err != nil {
 			log.Printf("WARNUNG: Downloadfehler! %v", err)
 		}

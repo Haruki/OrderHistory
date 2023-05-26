@@ -16,8 +16,8 @@ func (h *Handler) Alternate(c *gin.Context) {
 	var alternateOrder structs.Alternate
 	err := c.ShouldBindJSON(&alternateOrder)
 	if err == nil {
-		log.Println(fmt.Sprintf("itemName: %v", alternateOrder.ItemName))
-		log.Println(fmt.Sprintf("ImgUrl: %v", alternateOrder.ImgUrl))
+		log.Printf("itemName: %v\n", alternateOrder.ItemName)
+		log.Printf("ImgUrl: %v\n", alternateOrder.ImgUrl)
 		fixedDate, err := time.Parse("02.01.2006", alternateOrder.PurchaseDate)
 		alternateOrder.PurchaseDate = fixedDate.Format("2006-01-02")
 		if err != nil {
@@ -25,7 +25,7 @@ func (h *Handler) Alternate(c *gin.Context) {
 		}
 		var hash string
 		alternateOrder.ImgFile = fmt.Sprintf("%s%s%s%s", "alternate_", alternateOrder.PurchaseDate, "_", SpaceMap(alternateOrder.ItemName)[:5])
-		alternateOrder.ImgFile, hash, err = downloadFile(alternateOrder.ImgUrl, fmt.Sprintf("%s%s", "./img/", alternateOrder.ImgFile))
+		alternateOrder.ImgFile, hash, err = downloadFile(alternateOrder.ImgUrl, alternateOrder.ImgFile)
 		if err != nil {
 			log.Printf("WARNUNG: Downloadfehler! %v", err)
 		}

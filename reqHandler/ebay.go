@@ -24,7 +24,7 @@ func (h *Handler) Ebay(c *gin.Context) {
 		}
 		ebayOrder.ImgFile = structs.String(fmt.Sprintf("%s%d", "ebay_", nvlInt(ebayOrder.EbaySpecial.Artikelnummer)))
 		var hash string
-		*ebayOrder.ImgFile, hash, err = downloadFile(*ebayOrder.ImgUrl, fmt.Sprintf("%s%s", "./img/", *ebayOrder.ImgFile))
+		*ebayOrder.ImgFile, hash, err = downloadFile(*ebayOrder.ImgUrl, *ebayOrder.ImgFile)
 		if err != nil {
 			log.Printf("WARNUNG: Downloadfehler! %v", err)
 		}
