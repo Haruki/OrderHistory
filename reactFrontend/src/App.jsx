@@ -391,11 +391,6 @@ const Sonstiges = ({ Div }) => {
 
 const Picture = ({ ImgFile, handleFile, itemId, vendor }) => {
   const hiddenFileInput = useRef(null);
-  const getFileName = (ImgFile) => {
-    let lastSlashIndex = ImgFile.lastIndexOf('/');
-    let filename = ImgFile.substring(lastSlashIndex + 1, ImgFile.length);
-    return filename;
-  };
   const handleClick = (event) => {
     hiddenFileInput.current.click();
   };
@@ -409,7 +404,6 @@ const Picture = ({ ImgFile, handleFile, itemId, vendor }) => {
     <>
       <img
         className='picture'
-        // src={`${baseurl}/img/${getFileName(ImgFile)}`}
         src={`${baseurl}/img/${ImgFile}`}
         onClick={handleClick}
       />
