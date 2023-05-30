@@ -232,12 +232,24 @@ const OverlayForm = ({ show, modalDialog }) => {
         <label className='form-priceLabel' htmlFor='price'>
           Price
         </label>
-        <input className='form-price' type='text' name='price' id='price' />
+        <input
+          className='form-price'
+          type='text'
+          name='price'
+          id='price'
+          placeholder='3,99'
+        />
 
         <label className='form-dateLabel' htmlFor='date'>
           Date
         </label>
-        <input className='form-date' type='text' name='date' id='date' />
+        <input
+          className='form-date'
+          type='text'
+          name='date'
+          id='date'
+          placeholder='31.12.2001'
+        />
 
         <label className='form-platformLabel' htmlFor='platform'>
           Platform
@@ -257,17 +269,30 @@ const OverlayForm = ({ show, modalDialog }) => {
           type='text'
           name='currency'
           id='currency'
+          placeholder='€'
         />
 
         <label className='form-imgUrlLabel' htmlFor='imgUrl'>
           Image Url
         </label>
-        <input className='form-imgUrl' type='text' name='imgUrl' id='imgUrl' />
+        <input
+          className='form-imgUrl'
+          type='text'
+          name='imgUrl'
+          id='imgUrl'
+          placeholder='https://example.com/test.png'
+        />
 
         <label className='form-divLabel' htmlFor='div'>
           Div
         </label>
-        <input className='form-div' type='text' name='div' id='div' />
+        <input
+          className='form-div'
+          type='text'
+          name='div'
+          id='div'
+          placeholder='{"key":"value", "key2":"value2"}'
+        />
 
         <span className='form-button'>
           <button data-close-modal onClick={handleClose}>
