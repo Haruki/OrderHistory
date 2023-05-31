@@ -270,6 +270,8 @@ const OverlayForm = ({ show, modalDialog }) => {
           name='currency'
           id='currency'
           placeholder='€'
+          pattern='[€$£]'
+          title='€, $ or £'
         />
 
         <label className='form-imgUrlLabel' htmlFor='imgUrl'>
@@ -281,6 +283,8 @@ const OverlayForm = ({ show, modalDialog }) => {
           name='imgUrl'
           id='imgUrl'
           placeholder='https://example.com/test.png'
+          pattern='^https?:\/\/.*\.(png|jpe?g|gif|webp)$'
+          title='Image Url (http...png/jpg/gif/webp)'
         />
 
         <label className='form-divLabel' htmlFor='div'>
