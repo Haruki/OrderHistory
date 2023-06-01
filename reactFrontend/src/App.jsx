@@ -227,7 +227,16 @@ const OverlayForm = ({ show, modalDialog }) => {
         <label className='form-itemLabel' htmlFor='itemName'>
           Name
         </label>
-        <input className='form-item' type='text' name='itemName' id='name' />
+        <input
+          className='form-item'
+          type='text'
+          name='itemName'
+          id='name'
+          placeholder='Artikelbezeichnung'
+          pattern='.+'
+          title='Artikelbezeichnung'
+          required
+        />
 
         <label className='form-priceLabel' htmlFor='price'>
           Price
@@ -238,6 +247,23 @@ const OverlayForm = ({ show, modalDialog }) => {
           name='price'
           id='price'
           placeholder='3,99'
+          pattern='^[0-9]+([,.][0-9]{1,2})?$'
+          title='3,99'
+          required
+        />
+
+        <label className='form-platformLabel' htmlFor='platform'>
+          Platform
+        </label>
+        <input
+          className='form-platform'
+          type='platform'
+          name='platform'
+          id='platform'
+          placeholder='ebay'
+          pattern='.+'
+          title='ebay, alternate, aliexpress oder andere'
+          required
         />
 
         <label className='form-dateLabel' htmlFor='date'>
@@ -249,16 +275,9 @@ const OverlayForm = ({ show, modalDialog }) => {
           name='date'
           id='date'
           placeholder='31.12.2001'
-        />
-
-        <label className='form-platformLabel' htmlFor='platform'>
-          Platform
-        </label>
-        <input
-          className='form-platform'
-          type='platform'
-          name='platform'
-          id='platform'
+          pattern='^([0-2][0-9]|3[0-1])\.(0[1-9]|1[0-2])\.(19|20)[0-9]{2}$'
+          title='dd.mm.yyyy'
+          required
         />
 
         <label className='form-currencyLabel' htmlFor='currency'>
@@ -272,6 +291,7 @@ const OverlayForm = ({ show, modalDialog }) => {
           placeholder='€'
           pattern='[€$£]'
           title='€, $ or £'
+          required
         />
 
         <label className='form-imgUrlLabel' htmlFor='imgUrl'>
@@ -296,6 +316,8 @@ const OverlayForm = ({ show, modalDialog }) => {
           name='div'
           id='div'
           placeholder='{"key":"value", "key2":"value2"}'
+          pattern='^{"[^"]*":"[^"]*"}$'
+          title='{"key":"value", "key2":"value2"}'
         />
 
         <span className='form-button'>

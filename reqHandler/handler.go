@@ -43,7 +43,7 @@ func downloadFile(URL, fileName string) (string, string, error) {
 	}
 	hsha2 := fmt.Sprintf("%x", sha256.Sum256(b))
 	fmt.Println("SHA256: ", hsha2)
-	fileName = fileName + "_" + hsha2[0:5] + ".jpg"
+	fileName = fmt.Sprintf("/img/%s_%s.jpg", fileName, hsha2[0:5])
 	if hsha2 != "a567462f4edd496bdf5cd00da5bbde64131c283e3cf396bfd58c0fac26b13d9a" && hsha2 != "c041d4387a7d60b3d31d7f9c39e8ac531d8a342e24e695c739718a388f914f93" {
 		err = os.WriteFile(fileName, b, 0777)
 		if err != nil {
@@ -139,12 +139,16 @@ func (h *Handler) AddNewItemManual(c *gin.Context) {
 	price := c.PostForm("price")
 	imgUrl := c.PostForm("imgUrl")
 	vendor := c.PostForm("platform")
-	imgFileName, sha256Hash, err := downloadFile(imgUrl, vendor)
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-			"message": "Error while downloading file",
-		})
-		return
+	var imgFileName, sha256Hash string
+	var err error
+	if imgUrl != "" {
+		imgFileName, sha256Hash, err = downloadFile(imgUrl, vendor)
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+				"message": "Error while downloading file",
+			})
+			return
+		}
 	}
 	intPrice, err := strconv.Atoi(price)
 	if err != nil {
