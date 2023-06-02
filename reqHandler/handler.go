@@ -12,6 +12,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"time"
 
 	orderHistoryDb "github.com/haruki/OrderHistory/db"
 
@@ -136,11 +137,22 @@ func hashImage(file *multipart.FileHeader) (string, error) {
 func (h *Handler) AddNewItemManual(c *gin.Context) {
 	itemName := c.PostForm("itemName")
 	date := c.PostForm("date")
+	if date == "" {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"message": "No valid date",
+		})
+	}
+	fixedDate, err := time.Parse("02.01.2006", date)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"message": "No valid date",
+		})
+	}
+	date = fixedDate.Format("2006-01-02")
 	price := c.PostForm("price")
 	imgUrl := c.PostForm("imgUrl")
 	vendor := c.PostForm("platform")
 	var imgFileName, sha256Hash string
-	var err error
 	if imgUrl != "" {
 		imgFileName, sha256Hash, err = downloadFile(imgUrl, vendor)
 		if err != nil {
