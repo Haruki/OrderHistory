@@ -11,7 +11,9 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strconv"
+	"strings"
 	"time"
 
 	orderHistoryDb "github.com/haruki/OrderHistory/db"
@@ -150,6 +152,14 @@ func (h *Handler) AddNewItemManual(c *gin.Context) {
 	}
 	date = fixedDate.Format("2006-01-02")
 	price := c.PostForm("price")
+	price = strings.ReplaceAll(price, ",", "")
+	price = strings.ReplaceAll(price, ".", "")
+	if match, err := regexp.MatchString("^[0-9]+$", price); err != nil || !match {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"message": "invalid price",
+		})
+	}
+
 	imgUrl := c.PostForm("imgUrl")
 	vendor := c.PostForm("platform")
 	var imgFileName, sha256Hash string
