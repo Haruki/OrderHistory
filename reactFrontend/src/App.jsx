@@ -212,7 +212,7 @@ const OverlayForm = ({ show, modalDialog }) => {
       .then((response) => response.json())
       .then((data) => {
         console.log('Returnmessage:', data);
-        handleAdd(data);
+        // handleAdd(data);
         handleClose();
       })
       .catch((error) => {
@@ -316,7 +316,7 @@ const OverlayForm = ({ show, modalDialog }) => {
           name='div'
           id='div'
           placeholder='{"key":"value", "key2":"value2"}'
-          pattern='^{"[^"]*":"[^"]*"}$'
+          pattern='^\{"[^"]*":"[^"]*"\}$'
           title='{"key":"value", "key2":"value2"}'
         />
 
