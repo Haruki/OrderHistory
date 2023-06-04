@@ -53,7 +53,7 @@ func downloadFile(URL, fileName string) (string, string, error) {
 	}
 	hsha2 := fmt.Sprintf("%x", sha256.Sum256(b))
 	fmt.Println("SHA256: ", hsha2)
-	fileName = fmt.Sprintf("/img/%s_%s.%s", fileName, hsha2[0:5], contentType)
+	fileName = fmt.Sprintf("./img/%s_%s.%s", fileName, hsha2[0:5], contentType)
 	if hsha2 != "a567462f4edd496bdf5cd00da5bbde64131c283e3cf396bfd58c0fac26b13d9a" && hsha2 != "c041d4387a7d60b3d31d7f9c39e8ac531d8a342e24e695c739718a388f914f93" {
 		err = os.WriteFile(fileName, b, 0777)
 		if err != nil {

@@ -57,7 +57,10 @@ func convertDate(date string, vendor string) string {
 }
 
 func InsertNewItemManual(db *sql.DB, itemName string, date string, price int, currency string, vendor string, div string, imgFileName string, hash string) error {
-	date = convertDate(date, vendor)
+	if imgFileName[:6] == "./img/" {
+		imgFileName = imgFileName[6:]
+	}
+	//date = convertDate(date, vendor)
 	tx, err := db.Begin()
 	if err != nil {
 		log.Fatal(err)
