@@ -66,14 +66,14 @@ func InsertNewItemManual(db *sql.DB, itemName string, date string, price int, cu
 		log.Fatal(err)
 		return err
 	}
-	stmt, err := tx.Prepare("insert into t_purchase(item_name, purchase_date, price, currency, vendor_platform, img_file, img_hash) values(?,?,?,?,?,?,?)")
+	stmt, err := tx.Prepare("insert into t_purchase(item_name, purchase_date, price, currency, vendor_platform, img_file, img_hash, div) values(?,?,?,?,?,?,?,?)")
 	if err != nil {
 		log.Fatal(err)
 		return err
 	}
 	defer stmt.Close()
 	//set insert query parameters and execute
-	_, err = stmt.Exec(itemName, date, price, currency, vendor, imgFileName, hash)
+	_, err = stmt.Exec(itemName, date, price, currency, vendor, imgFileName, hash, div)
 	if err != nil {
 		log.Fatal(err)
 		return err
