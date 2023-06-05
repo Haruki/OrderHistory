@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"path/filepath"
+	"strconv"
 
 	webui "github.com/haruki/OrderHistory/ui_api"
 
@@ -46,12 +47,35 @@ func main() {
 	dist, _ := fs.Sub(webuifs, "reactFrontend/dist")
 	r.StaticFS("/webui", http.FS(dist)) //package.json -> "build": "vite build --base=/webui/"
 	r.GET("/allitems", func(c *gin.Context) {
+		//Pagination support
+		pageParam := c.DefaultQuery("page", "1")
+		page, conversionError := strconv.Atoi(pageParam)
+		if conversionError != nil {
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"Fehler": "ungültige Angabe für page"})
+			return
+		}
+		limitParam := c.DefaultQuery("limit", "50")
+		limit, conversionError := strconv.Atoi(limitParam)
+		if conversionError != nil {
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"Fehler": "ungültige Angabe für limit"})
+			return
+		}
+		startIndex := (page - 1) * limit
+		endIndex := page * limit
+
 		err, items := webui.LoadAllItems(db)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, err)
-		} else {
-			c.JSON(http.StatusOK, items)
 		}
+
+		if startIndex > len(items) {
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"Fehler": "page nummber zu hoch"})
+			return
+		}
+		if endIndex > len(items) {
+			endIndex = len(items)
+		}
+		c.JSON(http.StatusOK, items[startIndex:endIndex])
 	})
 	r.POST("/order/:platform", func(c *gin.Context) {
 		platform := c.Param("platform")
