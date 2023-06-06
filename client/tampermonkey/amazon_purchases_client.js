@@ -1,12 +1,12 @@
 // ==UserScript==
-// @name         ebay purchases client script
+// @name         amazon purchases client script
 // @namespace    http://tampermonkey.net/
 // @version      0.1
-// @description  ebay purchases client script
+// @description  amazon purchases client script
 // @author       You
-// @match        https://www.ebay.de/mye/myebay/*
+// @match        https://www.amazon.de/gp/your-account/order-details
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
-// @require     file://D:\data\coding\OrderHistory\client\tampermonkey\ebay_purchases_client.js
+// @require     file://D:\data\coding\OrderHistory\client\tampermonkey\amazon_purchases_client.js
 // @grant        none
 // @run-at       document-idle
 // ==/UserScript==
