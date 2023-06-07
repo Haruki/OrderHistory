@@ -4,7 +4,7 @@
 // @version      0.1
 // @description  amazon purchases client script
 // @author       You
-// @match        https://www.amazon.de/gp/your-account/order-details
+// @match        https://www.amazon.de/gp/your-account/order-details*
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
 // @require     file://D:\data\coding\OrderHistory\client\tampermonkey\amazon_purchases_client.js
 // @grant        none
@@ -79,7 +79,7 @@ async function fetchData(url = '', data = {}, method = 'GET') {
 
 (function () {
   'use strict';
-  let orderList = document.querySelectorAll('.m-ph-card.m-order-card');
+  let orderList = document.querySelectorAll('.shipment');
   console.log('Items auf Seite: %s', orderList.length);
   for (var order of orderList) {
     console.log('working on order...');
