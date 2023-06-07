@@ -85,75 +85,64 @@ async function fetchData(url = '', data = {}, method = 'GET') {
     console.log('working on order...');
     //orderDate
     let dateElement = order.querySelector(
-      'div.primary__item.secondaryMessage span:nth-child(2).primary__item--item-text'
+      'span.a-size-medium.a-color-base.a-text-bold'
     );
     console.log('orderDate: %s', dateElement.textContent);
-    let dateCleaned = dateElement.textContent
-      .replace('Mai', 'May')
-      .replace('Okt', 'Oct')
-      .replace('Dez', 'Dec')
-      .replace('Mär', 'Mar');
-    //loop item cards
-    let itemCards = order.querySelectorAll(
-      '.m-item-card.m-container-item-layout-row__body'
-    );
-    console.log('Items in order: %s', itemCards.length);
-    for (var itemCard of itemCards) {
-      //itemName:
-      let itemNameElement = itemCard.querySelector('div a.nav-link');
-      console.log('itemName: %o', itemNameElement.text);
-      //price
-      let itemPrice = itemCard.querySelector(
-        'div.container-item-col__info-item-info-additionalPrice div span'
-      );
-      let priceNumber = /^[^\d]*(\d.+)/.exec(itemPrice.innerHTML);
-      let price;
-      if (priceNumber[1]) {
-        console.log('regex price raw: ' + typeof priceNumber[1]);
-        console.log('regex price number: ' + priceNumber[1].replace(',', ''));
-        price = priceNumber[1].replace(',', '');
-      } else {
-        console.log(
-          'non regex price: ' +
-            itemPrice.innerHTML.substring(4).replace(',', '')
-        );
-        price = itemPrice.innerHTML.substring(4).replace(',', '');
-      }
-      //currency
-      let itemCurrency = /^[^(\s|\d)]*/.exec(itemPrice.innerHTML);
-      console.log('currency: %s', itemCurrency[0]);
-      let currency;
-      if (itemCurrency[0]) {
-        currency = itemCurrency[0].replace('EUR', '€').replace('US', '$');
-      }
-      //vendor
-      let vendorElement = itemCard.querySelector(
-        'div.container-item-col__info-item-info-primary.container-item-col__info-item-info-sellerInfo div a span'
-      );
-      console.log('Haendler: %s', vendorElement.firstChild.textContent);
-      //imgUrl
-      let imgElement = itemCard.querySelector('div.m-image img[src][alt]');
-      console.log('SRC: ' + imgElement.getAttribute('src'));
-      let imgUrl = imgElement.getAttribute('src');
-      if (imgElement.getAttribute('data-imgurl')) {
-        console.log('DATA-IMGURL: ' + imgElement.getAttribute('data-imgurl'));
-        imgUrl = imgElement.getAttribute('data-imgurl');
-      }
-      //build object for later json marshal
-      var orderObj = {
-        //   artikelnummer: parseint(artikelnummer.getattribute('data-listing-id')),
-        itemName: itemNameElement.text,
-        price: parseInt(price),
-        ebaySpecial: { Haendler: vendorElement.firstChild.textContent },
-        imgUrl: imgUrl,
-        purchaseDate: dateCleaned,
-        currency: currency,
-      };
-      console.log(JSON.stringify(orderObj));
+    let dateCleaned = dateElement.textContent.replace('Zugestellt:', '').trim();
+    //itemName:
+    let itemNameElement = order.querySelector('div a.nav-link');
+    console.log('itemName: %o', itemNameElement.text);
+    //price
 
-      //build button
-      var parent = itemCard.querySelector('.fake-menu-button');
-      buildButton(parent, orderObj);
+    let itemPrice = order.querySelector(
+      'div.container-item-col__info-item-info-additionalPrice div span'
+    );
+    let priceNumber = /^[^\d]*(\d.+)/.exec(itemPrice.innerHTML);
+    let price;
+    if (priceNumber[1]) {
+      console.log('regex price raw: ' + typeof priceNumber[1]);
+      console.log('regex price number: ' + priceNumber[1].replace(',', ''));
+      price = priceNumber[1].replace(',', '');
+    } else {
+      console.log(
+        'non regex price: ' + itemPrice.innerHTML.substring(4).replace(',', '')
+      );
+      price = itemPrice.innerHTML.substring(4).replace(',', '');
     }
+    //currency
+    let itemCurrency = /^[^(\s|\d)]*/.exec(itemPrice.innerHTML);
+    console.log('currency: %s', itemCurrency[0]);
+    let currency;
+    if (itemCurrency[0]) {
+      currency = itemCurrency[0].replace('EUR', '€').replace('US', '$');
+    }
+    //vendor
+    let vendorElement = order.querySelector(
+      'div.container-item-col__info-item-info-primary.container-item-col__info-item-info-sellerInfo div a span'
+    );
+    console.log('Haendler: %s', vendorElement.firstChild.textContent);
+    //imgUrl
+    let imgElement = order.querySelector('div.m-image img[src][alt]');
+    console.log('SRC: ' + imgElement.getAttribute('src'));
+    let imgUrl = imgElement.getAttribute('src');
+    if (imgElement.getAttribute('data-imgurl')) {
+      console.log('DATA-IMGURL: ' + imgElement.getAttribute('data-imgurl'));
+      imgUrl = imgElement.getAttribute('data-imgurl');
+    }
+    //build object for later json marshal
+    var orderObj = {
+      //   artikelnummer: parseint(artikelnummer.getattribute('data-listing-id')),
+      itemName: itemNameElement.text,
+      price: parseInt(price),
+      ebaySpecial: { Haendler: vendorElement.firstChild.textContent },
+      imgUrl: imgUrl,
+      purchaseDate: dateCleaned,
+      currency: currency,
+    };
+    console.log(JSON.stringify(orderObj));
+
+    //build button
+    var parent = order.querySelector('.fake-menu-button');
+    buildButton(parent, orderObj);
   }
 })();
