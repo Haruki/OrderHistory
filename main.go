@@ -75,7 +75,9 @@ func main() {
 		if endIndex > len(items) {
 			endIndex = len(items)
 		}
-		c.JSON(http.StatusOK, items[startIndex:endIndex])
+		// c.JSON(http.StatusOK, items[startIndex:endIndex])
+		c.JSON(http.StatusOK, items)
+
 	})
 	r.POST("/order/:platform", func(c *gin.Context) {
 		platform := c.Param("platform")
