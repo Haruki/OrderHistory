@@ -90,8 +90,13 @@ async function fetchData(url = '', data = {}, method = 'GET') {
     console.log('orderDate: %s', dateElement.textContent);
     let dateCleaned = dateElement.textContent.replace('Zugestellt:', '').trim();
     //itemName:
-    let itemNameElement = order.querySelector('div a.nav-link');
-    console.log('itemName: %o', itemNameElement.text);
+    // let itemNameElement = order.querySelector(
+    //   'a.a-link-normal[href^="/gp/product"]'
+    // );
+    let itemNameElement = order.querySelector(
+      'div > div.a-fixed-right-grid.a-spacing-top-medium > div > div.a-fixed-right-grid-col.a-col-left > div > div > div > div.a-fixed-left-grid-col.yohtmlc-item.a-col-right > div:nth-child(1) > a'
+    );
+    console.log('itemName: ' + itemNameElement.innerText.trim());
     //price
 
     let itemPrice = order.querySelector(
