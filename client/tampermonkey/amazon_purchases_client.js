@@ -99,10 +99,8 @@ async function fetchData(url = '', data = {}, method = 'GET') {
     console.log('itemName: ' + itemNameElement.innerText.trim());
     //price
 
-    let itemPrice = order.querySelector(
-      'div.container-item-col__info-item-info-additionalPrice div span'
-    );
-    let priceNumber = /^[^\d]*(\d.+)/.exec(itemPrice.innerHTML);
+    let itemPrice = order.querySelector('span.a-color-price nobr');
+    let priceNumber = /^[^\d]*(\d.+)/.exec(itemPrice.innerText.trim());
     let price;
     if (priceNumber[1]) {
       console.log('regex price raw: ' + typeof priceNumber[1]);
