@@ -129,7 +129,9 @@ async function fetchData(url = '', data = {}, method = 'GET') {
       vendor = vendorElement.firstChild.textContent;
     }
     //imgUrl
-    let imgElement = order.querySelector('div.m-image img[src][alt]');
+    let imgElement = order.querySelector(
+      'div > div.a-fixed-right-grid.a-spacing-top-medium > div > div.a-fixed-right-grid-col.a-col-left > div > div > div > div.a-text-center.a-fixed-left-grid-col.a-col-left > div > a > img'
+    );
     console.log('SRC: ' + imgElement.getAttribute('src'));
     let imgUrl = imgElement.getAttribute('src');
     if (imgElement.getAttribute('data-imgurl')) {
