@@ -120,10 +120,14 @@ async function fetchData(url = '', data = {}, method = 'GET') {
       currency = itemCurrency[0].replace('EUR', '€').replace('US', '$');
     }
     //vendor
+    let vendor;
     let vendorElement = order.querySelector(
-      'div.container-item-col__info-item-info-primary.container-item-col__info-item-info-sellerInfo div a span'
+      'div > div.a-fixed-right-grid.a-spacing-top-medium > div > div.a-fixed-right-grid-col.a-col-left > div > div > div > div.a-fixed-left-grid-col.yohtmlc-item.a-col-right > div:nth-child(2) > span > a'
     );
-    console.log('Haendler: %s', vendorElement.firstChild.textContent);
+    if (vendorElement) {
+      console.log('Haendler: %s', vendorElement.firstChild.textContent);
+      vendor = vendorElement.firstChild.textContent;
+    }
     //imgUrl
     let imgElement = order.querySelector('div.m-image img[src][alt]');
     console.log('SRC: ' + imgElement.getAttribute('src'));
