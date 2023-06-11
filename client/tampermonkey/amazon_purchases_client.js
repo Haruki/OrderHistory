@@ -93,10 +93,12 @@ async function fetchData(url = '', data = {}, method = 'GET') {
     // let itemNameElement = order.querySelector(
     //   'a.a-link-normal[href^="/gp/product"]'
     // );
+    let itemName;
     let itemNameElement = order.querySelector(
       'div > div.a-fixed-right-grid.a-spacing-top-medium > div > div.a-fixed-right-grid-col.a-col-left > div > div > div > div.a-fixed-left-grid-col.yohtmlc-item.a-col-right > div:nth-child(1) > a'
     );
-    console.log('itemName: ' + itemNameElement.innerText.trim());
+    itemName = itemNameElement.innerText.trim();
+    console.log('itemName: ' + itemName);
     //price
 
     let itemPrice = order.querySelector('span.a-color-price nobr');
@@ -112,6 +114,7 @@ async function fetchData(url = '', data = {}, method = 'GET') {
       );
       price = itemPrice.innerHTML.substring(4).replace(',', '');
     }
+
     //currency
     let itemCurrency = /^[^(\s|\d)]*/.exec(itemPrice.innerHTML);
     console.log('currency: %s', itemCurrency[0]);
@@ -138,15 +141,20 @@ async function fetchData(url = '', data = {}, method = 'GET') {
       console.log('DATA-IMGURL: ' + imgElement.getAttribute('data-imgurl'));
       imgUrl = imgElement.getAttribute('data-imgurl');
     }
+
     //build object for later json marshal
+    //build div object
+    let divObj = {
+      haendler: vendor,
+    };
     var orderObj = {
       //   artikelnummer: parseint(artikelnummer.getattribute('data-listing-id')),
-      itemName: itemNameElement.text,
+      itemName: itemName,
       price: parseInt(price),
-      ebaySpecial: { Haendler: vendorElement.firstChild.textContent },
       imgUrl: imgUrl,
       purchaseDate: dateCleaned,
       currency: currency,
+      div: JSON.stringify(divObj),
     };
     console.log(JSON.stringify(orderObj));
 
