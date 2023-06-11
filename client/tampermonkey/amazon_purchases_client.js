@@ -21,7 +21,7 @@ function buildButton(parent, data) {
   button.addEventListener('click', function () {
     fetchData(baseUrl + '/newItemManual', data, 'POST').then((response) => {
       console.log('order/amazon: %s', response.message); // JSON data parsed by `data.json()` call
-      if (response.message == 'Success') {
+      if (response.message == 'Item added') {
         button.innerHTML = 'Upload successful';
         button.disabled = true;
         button.style.backgroundColor = 'green';

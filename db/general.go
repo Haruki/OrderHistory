@@ -52,6 +52,12 @@ func convertDate(date string, vendor string) string {
 		if err != nil {
 			log.Fatal(err)
 		}
+	} else if vendor == "amazon" {
+		fixedDate, err := time.Parse("02.01.2006", date)
+		result = fixedDate.Format("2006-01-02")
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 	return result
 }
