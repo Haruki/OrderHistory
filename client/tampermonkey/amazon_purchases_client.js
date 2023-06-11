@@ -19,8 +19,8 @@ function buildButton(parent, data) {
   button.innerHTML = 'Upload data';
   button.disabled = true;
   button.addEventListener('click', function () {
-    fetchData(baseUrl + '/order/ebay', data, 'POST').then((response) => {
-      console.log('order/ebay: %s', response.message); // JSON data parsed by `data.json()` call
+    fetchData(baseUrl + '/newItemManual', data, 'POST').then((response) => {
+      console.log('order/amazon: %s', response.message); // JSON data parsed by `data.json()` call
       if (response.message == 'Success') {
         button.innerHTML = 'Upload successful';
         button.disabled = true;
@@ -39,8 +39,8 @@ function buildButton(parent, data) {
       '/checkItemExists?' +
       new URLSearchParams({
         itemName: data.itemName,
-        purchaseDate: data.purchaseDate,
-        vendor: 'ebay',
+        purchaseDate: data.date,
+        vendor: 'amazon',
       })
   ).then((response) => {
     console.log(response.status);
@@ -59,20 +59,20 @@ function buildButton(parent, data) {
   });
 }
 
-async function fetchData(url = '', data = {}, method = 'GET') {
+async function fetchData(url = '', data = {}, method = 'POST') {
   // Default options are marked with *
+  const formData = new FormData();
+  for (const key in data) {
+    formData.append(key, data[key]);
+  }
   const response = await fetch(url, {
     method: method, // *GET, POST, PUT, DELETE, etc.
     mode: 'cors', // no-cors, *cors, same-origin
     cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
     credentials: 'same-origin', // include, *same-origin, omit
-    headers: {
-      'Content-Type': 'application/json',
-      // 'Content-Type': 'application/x-www-form-urlencoded',
-    },
     redirect: 'follow', // manual, *follow, error
     referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-    body: JSON.stringify(data), // body data type must match "Content-Type" header
+    body: formData, // body data type must match "Content-Type" header
   });
   return response.json(); // parses JSON response into native JavaScript objects
 }
@@ -128,8 +128,8 @@ async function fetchData(url = '', data = {}, method = 'GET') {
       'div > div.a-fixed-right-grid.a-spacing-top-medium > div > div.a-fixed-right-grid-col.a-col-left > div > div > div > div.a-fixed-left-grid-col.yohtmlc-item.a-col-right > div:nth-child(2) > span > a'
     );
     if (vendorElement) {
-      console.log('Haendler: %s', vendorElement.firstChild.textContent);
-      vendor = vendorElement.firstChild.textContent;
+      console.log('Haendler: %s', vendorElement.firstChild.textContent.trim);
+      vendor = vendorElement.firstChild.textContent.trim();
     }
     //imgUrl
     let imgElement = order.querySelector(
@@ -144,22 +144,26 @@ async function fetchData(url = '', data = {}, method = 'GET') {
 
     //build object for later json marshal
     //build div object
-    let divObj = {
-      haendler: vendor,
-    };
+    let divObj = {};
+    if (vendor) {
+      divObj.vendor = vendor;
+    }
     var orderObj = {
       //   artikelnummer: parseint(artikelnummer.getattribute('data-listing-id')),
       itemName: itemName,
       price: parseInt(price),
       imgUrl: imgUrl,
-      purchaseDate: dateCleaned,
+      date: dateCleaned,
+      platform: 'amazon',
       currency: currency,
       div: JSON.stringify(divObj),
     };
     console.log(JSON.stringify(orderObj));
 
     //build button
-    var parent = order.querySelector('.fake-menu-button');
+    var parent = order.querySelector(
+      'div > div.a-fixed-right-grid.a-spacing-top-medium > div > div.a-fixed-right-grid-col.a-col-left > div > div > div > div.a-fixed-left-grid-col.yohtmlc-item.a-col-right > div:nth-child(6) > span'
+    );
     buildButton(parent, orderObj);
   }
 })();
