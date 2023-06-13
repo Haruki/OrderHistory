@@ -117,16 +117,22 @@ function convertDate(dateString) {
     let dateElement = order.querySelector(
       'span.a-size-medium.a-color-base.a-text-bold'
     );
-    console.log('orderDate: %s', dateElement.textContent);
-    let dateCleaned = dateElement.textContent.replace('Zugestellt:', '').trim();
+    let dateCleaned;
+    if (dateElement) {
+      console.log('orderDate: %s', dateElement.textContent);
+      dateCleaned = dateElement.textContent.replace('Zugestellt:', '').trim();
+    } else {
+      dateCleaned = orderDate;
+    }
     //itemName:
     // let itemNameElement = order.querySelector(
     //   'a.a-link-normal[href^="/gp/product"]'
     // );
     let itemName;
-    let itemNameElement = order.querySelector(
-      'div > div.a-fixed-right-grid.a-spacing-top-medium > div > div.a-fixed-right-grid-col.a-col-left > div > div > div > div.a-fixed-left-grid-col.yohtmlc-item.a-col-right > div:nth-child(1) > a'
-    );
+    let itemNameElement = order.querySelectorAll(
+      // 'div > div.a-fixed-right-grid.a-spacing-top-medium > div > div.a-fixed-right-grid-col.a-col-left > div > div > div > div.a-fixed-left-grid-col.yohtmlc-item.a-col-right > div:nth-child(1) > a'
+      'a[href^="/gp/product/"]'
+    )[1];
     itemName = itemNameElement.innerText.trim();
     console.log('itemName: ' + itemName);
     //price
@@ -154,16 +160,28 @@ function convertDate(dateString) {
     }
     //vendor
     let vendor;
-    let vendorElement = order.querySelector(
-      'div > div.a-fixed-right-grid.a-spacing-top-medium > div > div.a-fixed-right-grid-col.a-col-left > div > div > div > div.a-fixed-left-grid-col.yohtmlc-item.a-col-right > div:nth-child(2) > span > a'
-    );
+    let vendorElement = document
+      .evaluate(
+        '//span[contains(., "Verkauf durch")]',
+        order,
+        null,
+        XPathResult.ANY_TYPE,
+        null
+      )
+      .iterateNext();
+    // let vendorElement = order.querySelector(
+    //   'div > div.a-fixed-right-grid.a-spacing-top-medium > div > div.a-fixed-right-grid-col.a-col-left > div > div > div > div.a-fixed-left-grid-col.yohtmlc-item.a-col-right > div:nth-child(2) > span > a'
+    // );
     if (vendorElement) {
       console.log('Haendler: %s', vendorElement.firstChild.textContent.trim);
-      vendor = vendorElement.firstChild.textContent.trim();
+      vendor = vendorElement.firstChild.textContent
+        .replace('Verkauf durch:', '')
+        .trim();
     }
     //imgUrl
     let imgElement = order.querySelector(
-      'div > div.a-fixed-right-grid.a-spacing-top-medium > div > div.a-fixed-right-grid-col.a-col-left > div > div > div > div.a-text-center.a-fixed-left-grid-col.a-col-left > div > a > img'
+      // 'div > div.a-fixed-right-grid.a-spacing-top-medium > div > div.a-fixed-right-grid-col.a-col-left > div > div > div > div.a-text-center.a-fixed-left-grid-col.a-col-left > div > a > img'
+      'img[alt=""]'
     );
     console.log('SRC: ' + imgElement.getAttribute('src'));
     let imgUrl = imgElement.getAttribute('src');
