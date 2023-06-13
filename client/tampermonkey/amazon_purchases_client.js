@@ -77,8 +77,38 @@ async function fetchData(url = '', data = {}, method = 'POST') {
   return response.json(); // parses JSON response into native JavaScript objects
 }
 
+function convertDate(dateString) {
+  dateString = dateString.replace('Bestellt am ', '');
+  dateString = dateString.replace('.', '');
+  const months = {
+    Januar: '01',
+    Februar: '02',
+    März: '03',
+    April: '04',
+    Mai: '05',
+    Juni: '06',
+    Juli: '07',
+    August: '08',
+    September: '09',
+    Oktober: '10',
+    November: '11',
+    Dezember: '12',
+  };
+  const [day, month, year] = dateString.split(' ');
+  const formattedDay = day.padStart(2, '0');
+  const formattedMonth = months[month];
+  return `${formattedDay}.${formattedMonth}.${year}`;
+}
+
 (function () {
   'use strict';
+  //global order date in case the per item date is not available
+  let orderDate = document.querySelector('.order-date-invoice-item').innerText;
+  if (orderDate) {
+    orderDate = convertDate(orderDate);
+  }
+  console.log('global orderDate: %s', orderDate);
+  //get all orders -> List of orders
   let orderList = document.querySelectorAll('.shipment');
   console.log('Items auf Seite: %s', orderList.length);
   for (var order of orderList) {
