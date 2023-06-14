@@ -210,7 +210,8 @@ function convertDate(dateString) {
 
     //build button
     var parent = order.querySelector(
-      'div > div.a-fixed-right-grid.a-spacing-top-medium > div > div.a-fixed-right-grid-col.a-col-left > div > div > div > div.a-fixed-left-grid-col.yohtmlc-item.a-col-right > div:nth-child(6) > span'
+      // 'div > div.a-fixed-right-grid.a-spacing-top-medium > div > div.a-fixed-right-grid-col.a-col-left > div > div > div > div.a-fixed-left-grid-col.yohtmlc-item.a-col-right > div:nth-child(6) > span'
+      'span[data-action="bia_button"]'
     );
     buildButton(parent, orderObj);
   }
