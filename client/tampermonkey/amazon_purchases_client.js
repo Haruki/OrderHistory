@@ -109,7 +109,9 @@ function convertDate(dateString) {
   }
   console.log('global orderDate: %s', orderDate);
   //get all orders -> List of orders
-  let orderList = document.querySelectorAll('.shipment');
+  let orderList = document.querySelectorAll(
+    '.shipment div.a-fixed-left-grid.a-spacing-base,.shipment div.a-fixed-left-grid.a-spacing-none'
+  );
   console.log('Items auf Seite: %s', orderList.length);
   for (var order of orderList) {
     console.log('working on order...');
