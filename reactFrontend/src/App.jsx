@@ -3,6 +3,7 @@ import './App.css';
 import ebaysvg from '/EBay_logo.svg';
 import alternatesvg from '/Alternate.de_logo.svg';
 import aliextrassvg from '/Aliexpress_logo.svg';
+import amazonsvg from '/Amazon_logo.svg';
 
 var baseurl = 'http://localhost:8081';
 //var baseurl = '';
@@ -482,6 +483,8 @@ const Platform = ({ Vendor }) => {
       return (
         <img className='entry platform' src={aliextrassvg} alt='aliexpress' />
       );
+    case 'amazon':
+      return <img className='entry platform' src={amazonsvg} alt='amazon' />;
     default:
       return <span className='entry platform'>{Vendor}</span>;
   }
