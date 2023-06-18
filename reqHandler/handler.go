@@ -47,7 +47,8 @@ func downloadFile(URL, fileName string) (string, string, error) {
 	contentType := response.Header.Get("Content-type")
 	//letzte drei Zeichen des 'Content-Type' für Ermittlung des Typs (jpg/png/gif/...)
 	if len(contentType) >= 3 {
-		contentType = contentType[len(contentType)-3:]
+		// contentType = contentType[len(contentType)-3:]
+		contentType = strings.SplitN(contentType, "/", 2)[1]
 	} else {
 		contentType = "jpg"
 	}
