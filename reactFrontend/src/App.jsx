@@ -197,7 +197,9 @@ const AddItemButton = ({ handleShow }) => (
 //Compoent: Overlay Form for adding new Items
 const OverlayForm = ({ show, modalDialog }) => {
   const handleClose = (event) => {
-    event.preventDefault();
+    if (event) {
+      event.preventDefault();
+    }
     modalDialog.current.close();
   };
 
@@ -316,7 +318,7 @@ const OverlayForm = ({ show, modalDialog }) => {
           name='div'
           id='div'
           placeholder='{"key":"value", "key2":"value2"}'
-          pattern='^\{"[^"]*":"[^"]*"\}$'
+          pattern='^\{("[^"]*":"[^"]*",?)*\}$'
           title='{"key":"value", "key2":"value2"}'
         />
 
