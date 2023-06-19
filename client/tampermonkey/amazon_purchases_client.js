@@ -162,23 +162,21 @@ function convertDate(dateString) {
     }
     //vendor
     let vendor;
-    let vendorElement = document
-      .evaluate(
-        '//span[contains(., "Verkauf durch")]',
-        order,
-        null,
-        XPathResult.ANY_TYPE,
-        null
-      )
-      .iterateNext();
-    // let vendorElement = order.querySelector(
-    //   'div > div.a-fixed-right-grid.a-spacing-top-medium > div > div.a-fixed-right-grid-col.a-col-left > div > div > div > div.a-fixed-left-grid-col.yohtmlc-item.a-col-right > div:nth-child(2) > span > a'
-    // );
+    // let vendorElement = document
+    //   .evaluate(
+    //     '//span[contains(., "Verkauf durch")]',
+    //     order,
+    //     null,
+    //     XPathResult.ANY_TYPE,
+    //     null
+    //   )
+    //   .iterateNext();
+    let vendorElement = order.querySelector(
+      'div.a-row span.a-size-small.a-color-secondary'
+    );
     if (vendorElement) {
-      console.log('Haendler: %s', vendorElement.firstChild.textContent.trim);
-      vendor = vendorElement.firstChild.textContent
-        .replace('Verkauf durch:', '')
-        .trim();
+      console.log('Haendler: %s', vendorElement.textContent.trim);
+      vendor = vendorElement.textContent.replace('Verkauf durch:', '').trim();
     }
     //imgUrl
     let imgElement = order.querySelector(
