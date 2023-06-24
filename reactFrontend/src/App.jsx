@@ -373,7 +373,7 @@ const YearFilter = ({ data, yearFilter, handleYearFilterChange }) => {
             onChange={handleYearFilterChange}
             checked={yearFilter.has(year)}
           />
-          <label htmlFor={year}>{year === 0 ? 'All' : year}</label>
+          <label htmlFor={year}>{year === 0 ? 'All' : year - 2000}</label>
         </div>
       ))}
     </div>
