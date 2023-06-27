@@ -361,11 +361,15 @@ const VendorFilter = ({ data, vendorFilter, handleVendorFilterChange }) => {
 //Component: YearFilter
 const YearFilter = ({ data, yearFilter, handleYearFilterChange }) => {
   var uniqueYears = [
-    ...new Set(data.map((item) => new Date(item.PurchaseDate).getFullYear())),
+    ...new Set(
+      data.map((item) =>
+        new Date(item.PurchaseDate).getFullYear().toString().slice(-2)
+      )
+    ),
   ];
   uniqueYears.unshift(0);
   return (
-    <div className='yearFilter'>
+    <div className='yearFilter year-checkbox'>
       {uniqueYears.map((year) => (
         <div key={year}>
           <input
@@ -375,7 +379,7 @@ const YearFilter = ({ data, yearFilter, handleYearFilterChange }) => {
             onChange={handleYearFilterChange}
             checked={yearFilter.has(year)}
           />
-          <label htmlFor={year}>{year === 0 ? 'All' : year - 2000}</label>
+          <label htmlFor={year}>{year === 0 ? 'All' : year}</label>
         </div>
       ))}
     </div>

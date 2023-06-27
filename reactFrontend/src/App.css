@@ -1,3 +1,5 @@
+@import url('./YearCheckBox.css');
+
 #root {
   /* max-width: 1280px; */
   width: min(100ch, 100% - 2rem);
@@ -87,7 +89,7 @@
 
 .yearFilter {
   display: flex;
-  gap: 1rem;
+  gap: 0.1rem;
 }
 
 .vendorFilter {
