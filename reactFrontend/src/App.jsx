@@ -4,6 +4,7 @@ import ebaysvg from '/EBay_logo.svg';
 import alternatesvg from '/Alternate.de_logo.svg';
 import aliextrassvg from '/Aliexpress_logo.svg';
 import amazonsvg from '/Amazon_logo.svg';
+import EditAttributesDialog from '../components/EditAttributesDialog';
 
 var baseurl = 'http://localhost:8081';
 //var baseurl = '';
@@ -172,6 +173,7 @@ const App = () => {
     <div>
       <h1>OrderHistory</h1>
       <button onClick={displayAddItemForm}>Add Item</button>
+      <EditAttributesDialog />
       <OverlayForm show={showForm} modalDialog={modalAddItemDialog} />
       <Search setter={setsearchterm} val={searchterm} />
       <YearFilter
