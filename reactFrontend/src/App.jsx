@@ -162,7 +162,10 @@ const App = () => {
 
   const dataFiltered = data.filter(function (item) {
     return item.Name.toLowerCase().includes(searchterm.toLowerCase()) &&
-      (yearFilter.has(new Date(item.PurchaseDate).getFullYear()) ||
+      (yearFilter.has(
+        //new Date(item.PurchaseDate).getFullYear().toString().slice(-2)
+        parseInt(item.PurchaseDate.slice(2, 4))
+      ) ||
         (yearFilter.size == 0 ? true : false)) &&
       (vendorFilter.has(item.Vendor) || vendorFilter.size == 0)
       ? true
@@ -379,7 +382,7 @@ const YearFilter = ({ data, yearFilter, handleYearFilterChange }) => {
             onChange={handleYearFilterChange}
             checked={yearFilter.has(year)}
           />
-          <label htmlFor={year}>{year === 0 ? 'All' : year}</label>
+          <label htmlFor={year}>{/* {year === 0 ? 'All' : year} */}</label>
         </div>
       ))}
     </div>
