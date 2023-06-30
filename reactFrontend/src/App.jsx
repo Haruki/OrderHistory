@@ -366,7 +366,8 @@ const YearFilter = ({ data, yearFilter, handleYearFilterChange }) => {
   var uniqueYears = [
     ...new Set(
       data.map((item) =>
-        new Date(item.PurchaseDate).getFullYear().toString().slice(-2)
+        // new Date(item.PurchaseDate).getFullYear().toString().slice(-2)
+        parseInt(item.PurchaseDate.slice(2, 4))
       )
     ),
   ];
