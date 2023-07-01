@@ -119,9 +119,9 @@ const App = () => {
     var currentYearsSet = new Set();
     for (var checkb of checkBoxes) {
       if (checkb.checked) {
-        currentYearsSet.add(Number(checkb.id));
+        currentYearsSet.add(checkb.id);
       } else {
-        currentYearsSet.delete(Number(checkb.id));
+        currentYearsSet.delete(checkb.id);
       }
     }
     setYearFilter((yearFilter) => (yearFilter = currentYearsSet));
@@ -164,7 +164,7 @@ const App = () => {
     return item.Name.toLowerCase().includes(searchterm.toLowerCase()) &&
       (yearFilter.has(
         //new Date(item.PurchaseDate).getFullYear().toString().slice(-2)
-        parseInt(item.PurchaseDate.slice(2, 4))
+        item.PurchaseDate.slice(2, 4)
       ) ||
         (yearFilter.size == 0 ? true : false)) &&
       (vendorFilter.has(item.Vendor) || vendorFilter.size == 0)
@@ -367,7 +367,7 @@ const YearFilter = ({ data, yearFilter, handleYearFilterChange }) => {
     ...new Set(
       data.map((item) =>
         // new Date(item.PurchaseDate).getFullYear().toString().slice(-2)
-        parseInt(item.PurchaseDate.slice(2, 4))
+        item.PurchaseDate.slice(2, 4)
       )
     ),
   ];
